@@ -322,6 +322,22 @@ const ZODIAC_KAMI = {
     nature: "清流の神に見守られる人は、境界線なく人の痛みを感じられる、癒しの魂を持っています。感じすぎて疲れる日があるのは、心のアンテナが精巧だから。あなたの優しさは水のように、乾いた場所へ自然に流れて満たしていきます。" },
 };
 
+// ══════ 12柱ごとの魂の使命（前世・カルマ・今世のテーマ） ══════
+const SOUL_MISSION = {
+  "牡羊座": "前世では、誰かのために先陣を切って戦った魂だと伝えられています。その記憶が、今世でも「最初の一歩を引き受ける」役回りとして表れます。魂の課題は、勝つことより始めること——結果を出す前に評価を求めすぎない練習が、あなたを次の段階へ進めます。",
+  "牡牛座": "前世では、豊かな土地を守り育てる役目を担っていたと伝えられています。今世でも「価値あるものを見極め、じっくり育てる」ことがあなたの使命。魂の課題は、失うことへの恐れを手放し、変化そのものも豊かさの一部だと知ることです。",
+  "双子座": "前世では、遠く離れた場所の情報や言葉を運ぶ役目を担っていたと伝えられています。今世では、知識や人と人をつなぐことが使命に。魂の課題は、深く知ることを恐れないこと——広さと深さは、本来矛盾しません。",
+  "蟹座": "前世では、家族や共同体を守る番人だったと伝えられています。今世でも「居場所をつくる人」であることが使命。魂の課題は、守ることと抱え込むことの境界を知り、自分自身も誰かに守られていいと許すことです。",
+  "獅子座": "前世では、人々の前に立ち、希望の象徴として輝く役目を担っていたと伝えられています。今世でも「光であること」が使命。魂の課題は、賞賛がなくても自分の価値を信じること——輝きの源は、拍手の中ではなく自分自身の中にあります。",
+  "乙女座": "前世では、細やかな手仕事や癒しの技をもって人を支えていたと伝えられています。今世でも「整え、支える」ことが使命。魂の課題は、完璧でない自分をも受け入れること——不完全さの中にこそ、あなたの人間らしい魅力があります。",
+  "天秤座": "前世では、争いを調停し、美と均衡をもたらす役目を担っていたと伝えられています。今世でも「調和を生み出す」ことが使命。魂の課題は、誰かに合わせる前に、自分自身の望みを先に聞いてあげることです。",
+  "蠍座": "前世では、生と死、終わりと始まりの境界に立ち会う役目を担っていたと伝えられています。今世でも「深い変容を導く」ことが使命。魂の課題は、信頼することを恐れないこと——深く関わるほど、失う怖さも大きくなりますが、それを超えた先に本物の絆があります。",
+  "射手座": "前世では、遠い地へ真理を求めて旅する探求者だったと伝えられています。今世でも「意味を探し、伝える」ことが使命。魂の課題は、答えを急がないこと——旅の途中そのものに、すでに学びがあります。",
+  "山羊座": "前世では、長い年月をかけて何かを築き上げる責任者だったと伝えられています。今世でも「土台を作り、後世に残す」ことが使命。魂の課題は、成果が出るまでの時間を信じること——あなたの忍耐は、必ず形になります。",
+  "水瓶座": "前世では、時代の常識を疑い、新しい仕組みを提案する役目を担っていたと伝えられています。今世でも「未来を先取りする」ことが使命。魂の課題は、孤独を恐れないこと——新しい風は、最初はいつも一人から吹き始めます。",
+  "魚座": "前世では、境界を越えて人々の痛みに寄り添う癒し手だったと伝えられています。今世でも「共感し、包み込む」ことが使命。魂の課題は、他者と自分の感情を混同しないこと——あなたが満たされてはじめて、その慈愛は本当の力になります。",
+};
+
 // ══════ 元素ごとの鑑定文 ══════
 const ELEMENT_PROFILE = {
   "火": {
@@ -471,6 +487,9 @@ function buildResult(a) {
   if (a.rhythm === "夜型" || a.rhythm === "不規則") careLines.push("髪は眠っている間に育ちます。まずは眠りの質をひとつだけ整えることから。");
   if (a.diet === "偏りがち" || a.diet === "外食が多い") careLines.push("髪はタンパク質でできています。食卓に一品、豆や卵や魚を足すことが未来の髪への祈りです。");
 
+  const age = getCurrentAge(a.birthdate);
+  const cycle = getLifeCycle(age, zodiac.element);
+
   return {
     zodiac: zodiac.name,
     element: zodiac.element,
@@ -479,6 +498,7 @@ function buildResult(a) {
     kamiWords: kami.words,
     kamiImg: kami.img,
     nature: kami.nature,
+    soulMission: SOUL_MISSION[zodiac.name] || "",
     elementAdvice: elem.advice,
     flow: elem.flow,
     luckyColor: elem.color,
@@ -492,6 +512,39 @@ function buildResult(a) {
     styleAdvice: a.faceShape ? FACE_STYLE[a.faceShape] : "",
     careLines,
     concerns,
+    age,
+    cycle,
+  };
+}
+
+// ══════ 生まれてからの年数で読む「人生の周期」 ══════
+function getCurrentAge(birthdateStr) {
+  const b = new Date(birthdateStr);
+  const now = new Date();
+  let age = now.getFullYear() - b.getFullYear();
+  const m = now.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < b.getDate())) age--;
+  return age;
+}
+
+function getLifeCycle(age, element) {
+  const phaseLen = 7;
+  const phaseIndex = Math.floor(age / phaseLen) % 4;
+  const phaseYearInCycle = age % phaseLen;
+  const yearsToNext = phaseLen - phaseYearInCycle;
+  const phases = ["種をまく時期", "育てる時期", "花を咲かせる時期", "実りを収める時期"];
+  const phaseAdvice = {
+    "種をまく時期": "新しいことを始めるほど、後の実りが大きくなる時期です。小さな一歩を恐れないでください。",
+    "育てる時期": "地道な積み重ねが力になる時期です。派手さより、続けることが何よりの成果になります。",
+    "花を咲かせる時期": "これまでの努力が、周りから見える形になって表れやすい時期です。遠慮せず前に出てください。",
+    "実りを収める時期": "得たものを整理し、本当に大切なものを選び取る時期です。手放すことも、豊かさの一部です。",
+  };
+  const phase = phases[phaseIndex];
+  return {
+    phase,
+    advice: phaseAdvice[phase],
+    yearsToNext,
+    nextAge: age + yearsToNext,
   };
 }
 
@@ -624,9 +677,18 @@ function renderResult(record) {
       ${r.bloodMsg || r.timeMsg ? `<p>${r.bloodMsg} ${r.timeMsg}</p>` : ""}
     </div>
     <div class="result-card">
+      <h3>魂の使命 — 今世のテーマ</h3>
+      <p>${r.soulMission}</p>
+    </div>
+    <div class="result-card">
       <h3>髪が語るあなた</h3>
       ${r.hairLines.map(l => `<p>${l}</p>`).join("")}
       <p>${r.elementAdvice}</p>
+    </div>
+    <div class="result-card">
+      <h3>いまあなたがいる、人生の周期</h3>
+      <p>${r.age}歳のあなたは、いま「${r.cycle.phase}」にいます。${r.cycle.advice}</p>
+      <p>この周期は${r.cycle.nextAge}歳ごろに次の段階へ移ります。人生は一直線ではなく、種をまき、育て、花を咲かせ、実りを収める——この四つの季節を何度も繰り返しながら深まっていきます。</p>
     </div>
     <div class="result-card">
       <h3>運気の流れと、転機</h3>
@@ -662,14 +724,14 @@ function renderResult(record) {
     <div class="result-card">
       <h3>いちばんの気がかり —「${a.topWorry}」</h3>
       <p>${msg}</p>
-      ${a.worryDetail ? `<p>「${a.worryDetail}」——その迷いも、ここまでの流れの一部です。続きは、椅子でゆっくり聞かせてください。</p>` : ""}
+      ${a.worryDetail ? `<p>「${a.worryDetail}」——その迷いも、ここまでの流れの一部です。答えはすでに、あなたの中にあります。</p>` : ""}
     </div>`;
   }
   if (r.concerns.length) {
     html += `
     <div class="result-card">
       <h3>いまの髪の悩みへ</h3>
-      <p>「${r.concerns.join("・")}」——悩みは、髪があなたに送っているサインです。次回の施術で一緒に整えていきましょう。</p>
+      <p>「${r.concerns.join("・")}」——悩みは、髪があなたに送っているサインです。整えるたびに、少しずつ本来の自分へ近づいていきます。</p>
     </div>`;
   }
   html += renderOutcomeSection(record);
