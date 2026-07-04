@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#2a0d06"/>
+      <stop offset="0.55" stop-color="#6e2c12"/>
+      <stop offset="1" stop-color="#b8622a"/>
+    </linearGradient>
+    <radialGradient id="vignette" cx="0.5" cy="0.5" r="0.72">
+      <stop offset="0.6" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.5"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.44" r="0.5">
+      <stop offset="0" stop-color="#ffd9a0" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#ffd9a0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.62" stop-color="#ffd9a0" stop-opacity="0"/>
+      <stop offset="0.78" stop-color="#ffd9a0" stop-opacity="0.55"/>
+      <stop offset="0.86" stop-color="#ffd9a0" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#ffd9a0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="1.6"/>
+    </filter>
+    <filter id="blur6" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <!-- 星空 -->
+  <g fill="#ffffff">
+    <circle cx="313" cy="197" r="1.2" opacity="0.53"/>
+    <circle cx="177" cy="310" r="1.8" opacity="0.65"/>
+    <circle cx="485" cy="141" r="1.0" opacity="0.50"/>
+    <circle cx="260" cy="101" r="1.5" opacity="0.54"/>
+    <circle cx="735" cy="77" r="1.8" opacity="0.52"/>
+    <circle cx="275" cy="297" r="1.8" opacity="0.34"/>
+    <circle cx="112" cy="285" r="1.2" opacity="0.55"/>
+    <circle cx="664" cy="115" r="1.7" opacity="0.69"/>
+    <circle cx="405" cy="128" r="1.0" opacity="0.38"/>
+    <circle cx="67" cy="195" r="1.9" opacity="0.46"/>
+    <circle cx="343" cy="223" r="0.8" opacity="0.55"/>
+    <circle cx="175" cy="134" r="1.1" opacity="0.62"/>
+    <circle cx="559" cy="282" r="0.8" opacity="0.39"/>
+    <circle cx="283" cy="76" r="1.7" opacity="0.62"/>
+    <circle cx="615" cy="119" r="1.6" opacity="0.56"/>
+    <circle cx="290" cy="88" r="1.5" opacity="0.32"/>
+    <circle cx="554" cy="226" r="1.5" opacity="0.59"/>
+    <circle cx="421" cy="293" r="0.8" opacity="0.42"/>
+    <circle cx="752" cy="123" r="1.0" opacity="0.48"/>
+    <circle cx="31" cy="275" r="1.3" opacity="0.48"/>
+    <circle cx="60" cy="168" r="0.9" opacity="0.33"/>
+    <circle cx="159" cy="153" r="1.4" opacity="0.42"/>
+    <circle cx="40" cy="245" r="0.9" opacity="0.49"/>
+    <circle cx="476" cy="28" r="1.3" opacity="0.56"/>
+    <circle cx="476" cy="111" r="1.6" opacity="0.26"/>
+    <circle cx="769" cy="186" r="0.8" opacity="0.72"/>
+    <circle cx="200" cy="220" r="1.7" opacity="0.61"/>
+    <circle cx="715" cy="287" r="1.2" opacity="0.30"/>
+  </g>
+  <!-- 星座 -->
+  <g stroke="#ffd9a0" stroke-width="1" opacity="0.5">
+    <line x1="140" y1="150" x2="190" y2="118"/>
+    <line x1="190" y1="118" x2="245" y2="108"/>
+    <line x1="245" y1="108" x2="292" y2="132"/>
+  </g>
+  <g fill="#ffd9a0" opacity="0.9">
+    <circle cx="140" cy="150" r="4" filter="url(#soft)"/>
+    <circle cx="190" cy="118" r="3" filter="url(#soft)"/>
+    <circle cx="245" cy="108" r="3" filter="url(#soft)"/>
+    <circle cx="292" cy="132" r="4" filter="url(#soft)"/>
+  </g>
+  
+  <!-- 後光 -->
+  <circle cx="400" cy="220" r="185" fill="url(#halo)"/>
+  <circle cx="400" cy="220" r="240" fill="url(#glow)"/>
+  <circle cx="400" cy="218" r="120" fill="none" stroke="#ffd9a0" stroke-width="1.5" opacity="0.4"/>
+  <circle cx="400" cy="218" r="132" fill="none" stroke="#ffd9a0" stroke-width="0.8" opacity="0.25"/>
+  <!-- 髪の面 -->
+  <g fill="#ff9d5c" opacity="0.22" filter="url(#blur6)">
+    <path d="M385 150 C 340 90, 365 45, 330 10 C 370 50, 355 95, 405 150 Z"/>
+    <path d="M425 150 C 465 95, 445 55, 490 25 C 450 65, 462 105, 442 155 Z"/>
+  </g>
+  <!-- 髪の主線 -->
+  <g stroke="#ffd9a0" stroke-width="4" fill="none" opacity="0.8" stroke-linecap="round">
+    <path d="M400 160 C 350 100, 380 60, 340 15"/>
+    <path d="M420 150 C 430 90, 400 55, 430 5"/>
+    <path d="M380 155 C 330 110, 350 70, 300 40"/>
+    <path d="M440 165 C 490 110, 470 70, 515 40"/>
+    <path d="M360 175 C 290 140, 300 90, 250 70"/>
+    <path d="M455 180 C 525 145, 515 95, 565 75"/>
+    <path d="M345 200 C 260 180, 250 130, 195 120"/>
+    <path d="M470 205 C 550 185, 560 135, 615 125"/>
+  </g>
+  <g stroke="#ff9d5c" stroke-width="2.2" fill="none" opacity="0.5" stroke-linecap="round">
+    <path d="M400 160 C 350 100, 380 60, 340 15" transform="translate(9,12)"/>
+    <path d="M420 150 C 430 90, 400 55, 430 5" transform="translate(9,12)"/>
+    <path d="M380 155 C 330 110, 350 70, 300 40" transform="translate(9,12)"/>
+    <path d="M440 165 C 490 110, 470 70, 515 40" transform="translate(9,12)"/>
+    <path d="M360 175 C 290 140, 300 90, 250 70" transform="translate(9,12)"/>
+  </g>
+  <g fill="#ffd9a0" opacity="0.85">
+    <circle cx="320" cy="60" r="4"/>
+    <circle cx="480" cy="45" r="3"/>
+    <circle cx="255" cy="115" r="3"/>
+    <circle cx="560" cy="105" r="4"/>
+    <circle cx="405" cy="30" r="3"/>
+    <circle cx="205" cy="165" r="2.5"/>
+    <circle cx="600" cy="160" r="2.5"/>
+  </g>
+  <!-- 神様 -->
+  <g fill="#2a0d06">
+    <circle cx="400" cy="215" r="55"/>
+    <path d="M392 268 L 408 268 L 410 292 L 390 292 Z"/>
+    <path d="M310 400 C 318 300, 370 285, 400 285 C 430 285, 482 300, 490 400 C 495 450, 495 500, 495 500 L 305 500 C 305 500, 305 450, 310 400 Z"/>
+  </g>
+  <!-- 衣の襞 -->
+  <g stroke="#ffd9a0" stroke-width="1.2" fill="none" opacity="0.3">
+    <path d="M360 310 C 352 380, 350 440, 352 500"/>
+    <path d="M440 310 C 448 380, 450 440, 448 500"/>
+    <path d="M400 300 C 400 370, 400 440, 400 500"/>
+  </g>
+  <!-- 襟元の光 -->
+  <path d="M368 300 C 385 322, 415 322, 432 300" fill="none" stroke="#ffd9a0" stroke-width="2" opacity="0.55"/>
+  <!-- 輪郭のふち光 -->
+  <circle cx="400" cy="215" r="55" fill="none" stroke="#ffd9a0" stroke-width="2.2" opacity="0.65"/>
+  <path d="M312 395 C 322 302, 372 287, 400 287 C 428 287, 478 302, 488 395" fill="none" stroke="#ffd9a0" stroke-width="1.8" opacity="0.45"/>
+  <path d="M400 128 C 392 112, 402 100, 398 86 C 410 98, 412 112, 404 126 C 414 118, 416 108, 422 102 C 420 116, 414 126, 404 132 Z" fill="#ffd9a0" opacity="0.95" filter="url(#soft)"/>
+  <rect width="800" height="500" fill="url(#vignette)"/>
+</svg>
