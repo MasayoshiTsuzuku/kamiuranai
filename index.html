@@ -41,13 +41,10 @@ h1, h2, h3 { font-family: 'Shippori Mincho', serif; }
 .btn-row .btn { margin-top: 0; }
 
 /* ---------- スタート画面 ---------- */
-#start { text-align: center; padding-top: 12vh; }
-#start .mark {
-  width: 1px; height: 4rem; background: var(--gold); margin: 0 auto 2rem; opacity: 0.7;
-}
-#start h1 { font-size: 2.2rem; letter-spacing: 0.25em; margin-bottom: 1rem; }
-#start .sub { color: var(--sea); letter-spacing: 0.15em; font-size: 0.95rem; margin-bottom: 3rem; }
-#start .desc { font-size: 0.9rem; color: #6b665d; margin-bottom: 2rem; }
+#start.screen { text-align: center; max-width: none; padding: 0; }
+.hero-banner { width: 100%; line-height: 0; }
+.hero-banner img { width: 100%; height: auto; display: block; }
+.start-body { max-width: 640px; margin: 0 auto; padding: 0 5vw 4rem; }
 
 /* ---------- 質問画面 ---------- */
 .progress { height: 3px; background: rgba(43,41,38,0.1); border-radius: 2px; margin-bottom: 0.6rem; }
@@ -122,16 +119,16 @@ textarea { min-height: 4.5rem; resize: vertical; }
 
 <!-- ═══════ スタート ═══════ -->
 <section id="start" class="screen active">
-  <div class="mark"></div>
-  <p class="eyebrow">KAMI TO KAMI</p>
-  <h1>神と髪</h1>
-  <p class="sub">— 髪占い —</p>
-  <p class="desc">髪はその人の物語を映す鏡。<br>頭皮・髪質・骨格・生まれ持った星から、<br>あなたの髪の神様と、本来の自分へ還るケアを導きます。</p>
-  <p style="font-size:0.72rem; color:#a8a396; margin-bottom:1.5rem;">※回答は、占いをより良くするための研究データとして記録されます</p>
-  <button class="btn" onclick="startDiagnosis()">占いをはじめる</button>
-  <button class="btn ghost" onclick="showRecords()">これまでの記録を見る</button>
-  <button class="btn ghost" onclick="showStats()">傾向を見る（分析）</button>
-  <p class="settings-link"><a onclick="openSettings()">データ連携の設定（スプレッドシート）</a></p>
+  <div class="hero-banner">
+    <img src="images/hero-torii.jpg" alt="神と髪 — 髪占い">
+  </div>
+  <div class="start-body">
+    <p style="font-size:0.72rem; color:#a8a396; margin:1.6rem 0 1.5rem;">※回答は、占いをより良くするための研究データとして記録されます</p>
+    <button class="btn" onclick="startDiagnosis()">占いをはじめる</button>
+    <button class="btn ghost" onclick="showRecords()">これまでの記録を見る</button>
+    <button class="btn ghost" onclick="showStats()">傾向を見る（分析）</button>
+    <p class="settings-link"><a onclick="openSettings()">データ連携の設定（スプレッドシート）</a></p>
+  </div>
 </section>
 
 <!-- ═══════ 質問 ═══════ -->
