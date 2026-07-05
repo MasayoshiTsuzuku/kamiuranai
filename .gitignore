@@ -1,0 +1,5 @@
+dist/
+sheets-sync.gs
+*.md
+画像生成プロンプト.md
+images/gen-images.js
