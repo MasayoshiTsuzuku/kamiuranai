@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>神と髪 — 髪占い</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Shippori+Mincho:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #2b2926;
+  --sand: #f6f1e9;
+  --sea: #2f5d5a;
+  --gold: #b08d57;
+  --white: #fffdf9;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Serif JP', serif;
+  background: var(--sand);
+  color: var(--ink);
+  line-height: 1.9;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+.screen { display: none; max-width: 640px; margin: 0 auto; padding: 2rem 5vw 4rem; }
+.screen.active { display: block; }
+
+/* ---------- 共通パーツ ---------- */
+h1, h2, h3 { font-family: 'Shippori Mincho', serif; }
+.eyebrow { letter-spacing: 0.3em; font-size: 0.72rem; color: var(--gold); text-align: center; margin-bottom: 0.8rem; }
+.btn {
+  display: block; width: 100%; padding: 1rem;
+  font-family: 'Noto Serif JP', serif; font-size: 1rem;
+  background: var(--sea); color: #fff; border: none; border-radius: 4px;
+  cursor: pointer; letter-spacing: 0.1em; margin-top: 1.5rem;
+}
+.btn:active { opacity: 0.85; }
+.btn.ghost { background: transparent; color: var(--sea); border: 1px solid var(--sea); }
+.btn.small { width: auto; display: inline-block; padding: 0.5rem 1.2rem; font-size: 0.85rem; margin-top: 0; }
+.btn-row { display: flex; gap: 0.8rem; margin-top: 1.5rem; }
+.btn-row .btn { margin-top: 0; }
+
+/* ---------- スタート画面 ---------- */
+#start.screen { text-align: center; max-width: none; padding: 0; }
+.hero-stage { position: relative; width: 100%; line-height: 0; }
+.hero-stage img { width: 100%; height: auto; display: block; }
+.hero-stage .hero-mobile { display: none; }
+.start-body { max-width: 640px; margin: 0 auto; padding: 0 5vw 3rem; }
+
+/* 画像の中に重ねる本物のボタン */
+.overlay-btn, .overlay-link {
+  position: absolute; display: flex; align-items: center; justify-content: center;
+  font-family: 'Noto Serif JP', serif; letter-spacing: 0.12em; line-height: 1;
+  border-radius: 4px; cursor: pointer; padding: 0;
+}
+.overlay-btn { font-size: clamp(11px, 1.05vw, 20px); }
+.ob-fill { background: var(--sea); color: #fff; border: 1px solid rgba(176,141,87,0.6); }
+.ob-fill:active { opacity: 0.85; }
+.ob-ghost { background: #fbf8f1; color: var(--ink); border: 1px solid rgba(176,141,87,0.55); }
+.ob-ghost:active { background: #f1ece0; }
+.overlay-link { font-size: clamp(9px, 0.8vw, 15px); color: #6b665d; text-decoration: underline; background: none; border: none; }
+.mobile-actions { display: none; }
+
+@media (max-width: 820px) {
+  .hero-stage .hero-full { display: none; }
+  .hero-stage .hero-mobile { display: block; height: 44vh; object-fit: cover; object-position: center 20%; }
+  .overlay-btn, .overlay-link { display: none; }
+  .mobile-actions { display: block; margin-top: 1.6rem; }
+}
+
+/* ---------- 質問画面 ---------- */
+.progress { height: 3px; background: rgba(43,41,38,0.1); border-radius: 2px; margin-bottom: 0.6rem; }
+.progress-bar { height: 100%; background: var(--gold); border-radius: 2px; width: 0; transition: width 0.3s; }
+.step-label { font-size: 0.75rem; color: var(--gold); letter-spacing: 0.2em; text-align: center; margin-bottom: 1.6rem; }
+.q-title { font-size: 1.25rem; color: var(--sea); margin-bottom: 1.6rem; text-align: center; }
+.field { margin-bottom: 1.6rem; }
+.field > label.name { display: block; font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--ink); font-weight: 600; }
+.choices { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.choices label {
+  padding: 0.55rem 1rem; border: 1px solid rgba(43,41,38,0.25); border-radius: 999px;
+  font-size: 0.9rem; cursor: pointer; background: var(--white); user-select: none;
+}
+.choices input { display: none; }
+.choices input:checked + span { color: #fff; }
+.choices label:has(input:checked) { background: var(--sea); border-color: var(--sea); color: #fff; }
+input[type="text"], input[type="date"], input[type="number"], select, textarea {
+  width: 100%; padding: 0.7rem; border: 1px solid rgba(43,41,38,0.25); border-radius: 4px;
+  font-family: 'Noto Serif JP', serif; font-size: 1rem; background: var(--white); color: var(--ink);
+}
+textarea { min-height: 4.5rem; resize: vertical; }
+.hint { font-size: 0.75rem; color: #8a8577; margin-top: 0.3rem; }
+
+/* ---------- 結果画面 ---------- */
+.result-card {
+  background: var(--white); border-radius: 6px; padding: 2rem 1.6rem; margin-bottom: 1.4rem;
+  border-top: 3px solid var(--gold);
+}
+.result-card h3 { color: var(--sea); font-size: 1.05rem; margin-bottom: 0.8rem; letter-spacing: 0.1em; }
+.result-card p { font-size: 0.95rem; margin-bottom: 0.6rem; }
+.kami-name {
+  text-align: center; padding: 2.5rem 1rem; margin-bottom: 1.4rem;
+  background: linear-gradient(160deg, #2f5d5a 0%, #1e403e 100%); color: #fff; border-radius: 6px;
+  min-height: 380px; display: flex; flex-direction: column; justify-content: center;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.55);
+}
+.kami-name .small-label { font-size: 0.75rem; letter-spacing: 0.3em; color: #e8d9bd; margin-bottom: 1rem; }
+.kami-name h2 { font-size: 1.7rem; letter-spacing: 0.12em; margin-bottom: 0.8rem; }
+.kami-name .kami-words { font-size: 0.9rem; opacity: 0.9; }
+.badge-row { display: flex; justify-content: center; gap: 0.6rem; margin-top: 1.2rem; flex-wrap: wrap; }
+.badge { font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.4); border-radius: 999px; padding: 0.25rem 0.9rem; }
+
+/* ---------- 記録一覧 ---------- */
+.record {
+  background: var(--white); border-radius: 6px; padding: 1.2rem 1.4rem; margin-bottom: 0.8rem;
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  border-left: 3px solid var(--gold); cursor: pointer;
+}
+.record .info { flex: 1; min-width: 0; }
+.record .name { font-weight: 600; }
+.record .meta { font-size: 0.78rem; color: #8a8577; }
+.record .del { background: none; border: none; color: #b05757; font-size: 0.8rem; cursor: pointer; font-family: inherit; flex-shrink: 0; }
+.empty { text-align: center; color: #8a8577; padding: 3rem 0; font-size: 0.9rem; }
+.top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 0.5rem; }
+.top-nav a { color: var(--sea); text-decoration: none; font-size: 0.85rem; cursor: pointer; }
+.rec-badge { font-size: 0.7rem; color: var(--sea); border: 1px solid rgba(47,93,90,0.4); border-radius: 999px; padding: 0.05rem 0.6rem; margin-left: 0.4rem; white-space: nowrap; }
+.rec-badge.todo { color: #b05757; border-color: rgba(176,87,87,0.4); }
+
+/* ---------- 施術記録・分析 ---------- */
+.outcome-box { background: var(--white); border-radius: 6px; padding: 1.6rem; margin-top: 1.4rem; border-top: 3px solid var(--sea); }
+.outcome-box h3 { color: var(--sea); font-size: 1rem; margin-bottom: 1rem; }
+.stat-card { background: var(--white); border-radius: 6px; padding: 1.4rem 1.6rem; margin-bottom: 1rem; border-top: 3px solid var(--gold); }
+.stat-card h3 { color: var(--sea); font-size: 1rem; margin-bottom: 0.8rem; }
+.stat-card p { font-size: 0.88rem; margin-bottom: 0.2rem; }
+.bar { height: 8px; background: rgba(47,93,90,0.12); border-radius: 4px; overflow: hidden; margin: 0.15rem 0 0.7rem; }
+.bar > i { display: block; height: 100%; background: var(--sea); }
+.settings-link { text-align: center; margin-top: 2.5rem; }
+.settings-link a { font-size: 0.8rem; color: #8a8577; cursor: pointer; text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- ═══════ スタート ═══════ -->
+<section id="start" class="screen active">
+  <div class="hero-stage">
+    <img src="../images/hero-torii-full.jpg" alt="神と髪 — 髪占い" class="hero-full">
+    <img src="../images/hero-torii-mobile.jpg" alt="神と髪 — 髪占い" class="hero-mobile">
+    <button class="overlay-btn ob-fill" style="left:37.2%; top:66.4%; width:25.6%; height:5.8%;" onclick="startDiagnosis()">占いをはじめる</button>
+    <button class="overlay-btn ob-ghost" style="left:37.2%; top:73.7%; width:25.6%; height:6.1%;" onclick="showRecords()">これまでの記録を見る</button>
+    <button class="overlay-btn ob-ghost" style="left:37.2%; top:80.9%; width:25.6%; height:6.1%;" onclick="showStats()">傾向を見る（分析）</button>
+  </div>
+  <div class="start-body">
+    <div class="mobile-actions">
+      <button class="btn" onclick="startDiagnosis()">占いをはじめる</button>
+      <button class="btn ghost" onclick="showRecords()">これまでの記録を見る</button>
+      <button class="btn ghost" onclick="showStats()">傾向を見る（分析）</button>
+    </div>
+    <p style="font-size:0.72rem; color:#a8a396; margin:1.4rem 0 0;">※回答は、占いをより良くするための研究データとして記録されます</p>
+  </div>
+</section>
+
+<!-- ═══════ 質問 ═══════ -->
+<section id="quiz" class="screen">
+  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+  <p class="step-label" id="stepLabel"></p>
+  <div id="quizBody"></div>
+  <p id="formError" style="color:#b05757; font-size:0.88rem; text-align:center; margin-top:1rem;"></p>
+  <div class="btn-row">
+    <button class="btn ghost" id="prevBtn" onclick="prevStep()">もどる</button>
+    <button class="btn" id="nextBtn" onclick="nextStep()">つぎへ</button>
+  </div>
+</section>
+
+<!-- ═══════ 結果 ═══════ -->
+<section id="result" class="screen">
+  <div id="resultBody"></div>
+  <div class="btn-row">
+    <button class="btn ghost" onclick="goHome()">トップへ</button>
+    <button class="btn" onclick="startDiagnosis()">もう一度占う</button>
+  </div>
+</section>
+
+<!-- ═══════ 記録一覧 ═══════ -->
+<section id="records" class="screen">
+  <div class="top-nav">
+    <a onclick="goHome()">← トップへ</a>
+    <span>
+      <a onclick="exportCsv()">CSV書き出し</a> ／
+      <a onclick="exportRecords()">JSON書き出し</a> ／
+      <a onclick="syncAll()">シートへ全件送信</a>
+    </span>
+  </div>
+  <p class="eyebrow">RECORDS</p>
+  <h2 style="text-align:center; margin-bottom:2rem; color:var(--sea);">診断の記録</h2>
+  <div id="recordList"></div>
+</section>
+
+<!-- ═══════ 傾向分析 ═══════ -->
+<section id="stats" class="screen">
+  <div class="top-nav">
+    <a onclick="goHome()">← トップへ</a>
+  </div>
+  <p class="eyebrow">INSIGHTS</p>
+  <h2 style="text-align:center; margin-bottom:2rem; color:var(--sea);">傾向を見る</h2>
+  <div id="statsBody"></div>
+</section>
+
+<script>
+/* ══════════════════════════════════════
+   質問定義
+   ══════════════════════════════════════ */
+const STEPS = [
+  {
+    label: "お客さま情報",
+    title: "はじめに、お名前を教えてください",
+    fields: [
+      { key: "name", type: "text", label: "お名前", placeholder: "例：都竹 花子" },
+      { key: "birthdate", type: "date", label: "生年月日" },
+      { key: "blood", type: "choice", label: "血液型", options: ["A", "B", "O", "AB", "不明"] },
+      { key: "birthtime", type: "choice", label: "生まれた時間帯（わかれば）", options: ["朝", "昼", "夕方", "夜", "深夜", "不明"] },
+      { key: "birthTimeExact", type: "time", label: "出生時刻（わかれば・より詳しい鑑定になります）" },
+      { key: "birthplace", type: "text", label: "出生地（わかれば）", placeholder: "例：大阪府" },
+    ]
+  },
+  {
+    label: "頭皮・髪質",
+    title: "髪と頭皮のことを教えてください",
+    fields: [
+      { key: "scalpType", type: "choice", label: "頭皮のタイプ", options: ["乾燥", "脂性", "普通", "混合"] },
+      { key: "scalpColor", type: "choice", label: "頭皮の色", options: ["健康的なピンク", "白", "黄", "赤み"] },
+      { key: "thickness", type: "choice", label: "髪の太さ", options: ["細い", "普通", "太い"] },
+      { key: "elasticity", type: "choice", label: "髪のコシ・弾力", options: ["強い", "弱い"] },
+      { key: "curl", type: "choice", label: "髪のクセ", options: ["直毛", "波状", "強いくせ毛"] },
+      { key: "cowlick", type: "choice", label: "つむじ（渦）", options: ["右巻き", "左巻き", "2つ以上", "不明"] },
+      { key: "cowlickPos", type: "multi", label: "つむじ（渦）の位置（複数可）", options: ["前寄り", "頭頂部", "後ろ寄り", "わからない"] },
+      { key: "volume", type: "choice", label: "毛量", options: ["少ない", "普通", "多い"] },
+      { key: "shine", type: "choice", label: "ツヤ", options: ["あり", "普通", "なし"] },
+      { key: "damage", type: "choice", label: "ダメージ度合い", options: ["ほぼなし", "少しある", "かなりある"] },
+    ]
+  },
+  {
+    label: "顔つき・骨格",
+    title: "お顔立ちと骨格を教えてください",
+    fields: [
+      { key: "faceShape", type: "choice", label: "顔型", options: ["丸", "卵", "面長", "四角", "逆三角"] },
+      { key: "bodyType", type: "choice", label: "骨格タイプ", options: ["ストレート", "ウェーブ", "ナチュラル", "不明"] },
+      { key: "forehead", type: "choice", label: "額の広さ", options: ["広い", "普通", "狭い"] },
+      { key: "hairline", type: "choice", label: "生え際の形", options: ["M字", "富士額", "標準"] },
+    ]
+  },
+  {
+    label: "悩み・ライフスタイル",
+    title: "いまの悩みと、日々の暮らしについて",
+    fields: [
+      { key: "concerns", type: "multi", label: "現在の髪の悩み（複数可）", options: ["抜け毛", "パサつき", "うねり", "白髪", "ボリューム不足", "広がり", "頭皮のかゆみ", "特になし"] },
+      { key: "rhythm", type: "choice", label: "生活リズム", options: ["朝型", "夜型", "不規則"] },
+      { key: "stress", type: "choice", label: "ストレス度合い", options: ["低い", "普通", "高い"] },
+      { key: "diet", type: "choice", label: "食生活の傾向", options: ["バランス良い", "外食が多い", "偏りがち", "小食"] },
+    ]
+  },
+  {
+    label: "占いでみたいこと",
+    title: "今日は、何をみてみましょう",
+    fields: [
+      { key: "fortuneTopics", type: "multi", label: "占いでみてみたいこと（いくつでも）", options: ["総合運", "恋愛・結婚", "仕事・才能", "金運", "人間関係", "健康", "性格・本質", "未来予測", "開運"] },
+      { key: "topWorry", type: "choice", label: "いま、一番気になっていることは？", options: ["恋愛・結婚", "仕事", "お金", "家族・人間関係", "健康", "自分の生き方", "特にない"] },
+      { key: "worryDetail", type: "textarea", label: "よければ、少しだけ詳しく（任意）", placeholder: "例：転職しようか迷っている" },
+    ]
+  },
+  {
+    label: "なりたいイメージ",
+    title: "最後に、なりたい自分を教えてください",
+    fields: [
+      { key: "idealImage", type: "text", label: "理想の髪型・雰囲気", placeholder: "例：ナチュラルで柔らかい印象" },
+      { key: "colorPref", type: "choice", label: "好きな色・カラー傾向", options: ["暗め・落ち着き", "明るめ", "暖色系", "寒色系", "自然のまま"] },
+      { key: "memo", type: "textarea", label: "メモ（施術者用・任意）", placeholder: "気づいたことなど" },
+    ]
+  },
+];
+
+/* ══════════════════════════════════════
+   占いロジック
+   ══════════════════════════════════════ */
+const ZODIAC = [
+  { name: "山羊座", until: [1, 19], element: "地" }, { name: "水瓶座", until: [2, 18], element: "風" },
+  { name: "魚座", until: [3, 20], element: "水" }, { name: "牡羊座", until: [4, 19], element: "火" },
+  { name: "牡牛座", until: [5, 20], element: "地" }, { name: "双子座", until: [6, 21], element: "風" },
+  { name: "蟹座", until: [7, 22], element: "水" }, { name: "獅子座", until: [8, 22], element: "火" },
+  { name: "乙女座", until: [9, 22], element: "地" }, { name: "天秤座", until: [10, 23], element: "風" },
+  { name: "蠍座", until: [11, 22], element: "水" }, { name: "射手座", until: [12, 21], element: "火" },
+  { name: "山羊座", until: [12, 31], element: "地" },
+];
+
+function getZodiac(dateStr) {
+  const d = new Date(dateStr);
+  const m = d.getMonth() + 1, day = d.getDate();
+  for (const z of ZODIAC) {
+    if (m < z.until[0] || (m === z.until[0] && day <= z.until[1])) return z;
+  }
+  return ZODIAC[0];
+}
+
+function getNumerology(dateStr) {
+  let digits = dateStr.replace(/-/g, "").split("").map(Number);
+  let n = digits.reduce((a, b) => a + b, 0);
+  while (n > 9 && n !== 11 && n !== 22 && n !== 33) {
+    n = String(n).split("").map(Number).reduce((a, b) => a + b, 0);
+  }
+  return n;
+}
+
+// ══════ 12柱の髪の神様（星座ごと） ══════
+const ZODIAC_KAMI = {
+  "牡羊座": { kami: "暁火の神", img: "../images/kami-aries.svg",
+    words: "夜明けにいちばん最初の火を灯す神が、あなたの髪に宿っています。",
+    nature: "暁火の神に見守られる人は、思い立ったら誰より早く動き出す開拓者の魂を持っています。考えるより先に体が動く——その勢いが、周りの人を巻き込み、道なき場所に道を作ります。失敗を恐れない心は、何度でも夜明けを迎えられる強さの証です。" },
+  "牡牛座": { kami: "大樹の神", img: "../images/kami-taurus.svg",
+    words: "大地に深く根ざす大樹の力が、あなたの髪に宿っています。",
+    nature: "大樹の神に見守られる人は、五感が鋭く、本物を見分ける目を持っています。ゆっくりでも、一度決めたら動かない静かな強さがあり、周りからは「安心できる人」と映っています。心地よさを大切にする感性は、豊かさを引き寄せる根になります。" },
+  "双子座": { kami: "双風の神", img: "../images/kami-gemini.svg",
+    words: "ふたつの風が、あなたの髪を軽やかに揺らしています。",
+    nature: "双風の神に見守られる人は、好奇心と言葉の才に恵まれ、どんな相手とも話の糸口を見つけられます。飽きっぽいと言われることがあっても、それは欠点ではなく、多くの世界を見るために生まれた翼。ふたつの視点を同時に持てることが、あなたの知性です。" },
+  "蟹座": { kami: "月潮の神", img: "../images/kami-cancer.svg",
+    words: "月夜の潮が、あなたの髪にうるおいを運んでいます。",
+    nature: "月潮の神に見守られる人は、月が潮を導くように、身近な人の心の満ち引きを感じ取ります。守ると決めた人へは誰よりも深い愛情を注ぎ、その温かさが「帰りたくなる場所」を作ります。思い出を大切にする心は、絆を育てる才能です。" },
+  "獅子座": { kami: "日輪の神", img: "../images/kami-leo.svg",
+    words: "真昼の太陽の光が、あなたの髪を金色に照らしています。",
+    nature: "日輪の神に見守られる人は、そこにいるだけで場が明るくなる、生まれながらの主役の星です。認められたい気持ちは弱さではなく、輝くための燃料。あなたが堂々と輝くほど、周りの人にも光が分け与えられていきます。" },
+  "乙女座": { kami: "穂波の神", img: "../images/kami-virgo.svg",
+    words: "実りの穂波が、あなたの髪に豊かに揺れています。",
+    nature: "穂波の神に見守られる人は、細部に気づく目と、人知れず段取りを整える手を持っています。あなたの丁寧さに、周りは何度も救われています。完璧を求めて自分に厳しくなりすぎる日は、「八分咲きで満開」と唱えてください。" },
+  "天秤座": { kami: "薫風の神", img: "../images/kami-libra.svg",
+    words: "初夏の薫る風が、あなたの髪を優雅になびかせています。",
+    nature: "薫風の神に見守られる人は、美しいもの・釣り合いの取れたものを見抜く審美眼を持っています。人と人の間に立つと自然と場が和らぐのは、天性の調停者だから。迷いやすいのは優柔不断ではなく、すべての側から物事を見られる証です。" },
+  "蠍座": { kami: "淵水の神", img: "../images/kami-scorpio.svg",
+    words: "深い淵の静かな水が、あなたの髪に艶を与えています。",
+    nature: "淵水の神に見守られる人は、物事の底まで見通す集中力を持っています。一度心を決めた相手やものごとへの一途さは12星座随一。浅く広くより、深くひとつ。その深さが、他の誰にも辿り着けない場所へあなたを連れて行きます。" },
+  "射手座": { kami: "流星の神", img: "../images/kami-sagittarius.svg",
+    words: "夜空を駆ける流れ星の尾が、あなたの髪になびいています。",
+    nature: "流星の神に見守られる人は、遠くを目指すほど力が湧く、冒険と学びの魂です。今いる場所が窮屈に感じるなら、それは次の旅の合図。楽観の力は天性の御守りで、あなたが「なんとかなる」と言うと、本当になんとかなっていきます。" },
+  "山羊座": { kami: "岩峰の神", img: "../images/kami-capricorn.svg",
+    words: "山嶺の澄んだ気が、あなたの髪に一本の芯を通しています。",
+    nature: "岩峰の神に見守られる人は、時間をかけて登り続ける忍耐と、責任を引き受ける肩を持っています。若い頃の苦労が、年を重ねるほど輝きに変わる大器晩成の星。頂上からの景色は、あなたのように登り続けた人にだけ見えます。" },
+  "水瓶座": { kami: "星風の神", img: "../images/kami-aquarius.svg",
+    words: "星々のあいだを渡る風が、あなたの髪に宿っています。",
+    nature: "星風の神に見守られる人は、時代の半歩先を感じ取る独創の魂です。「みんなと同じ」を心地よく裏切っていくその感性は、周りを自由にする風。孤独に見える道も、振り返れば必ず誰かがついてきています。" },
+  "魚座": { kami: "清流の神", img: "../images/kami-pisces.svg",
+    words: "清らかな流れが、あなたの髪にうるおいと透明感を与えています。",
+    nature: "清流の神に見守られる人は、境界線なく人の痛みを感じられる、癒しの魂を持っています。感じすぎて疲れる日があるのは、心のアンテナが精巧だから。あなたの優しさは水のように、乾いた場所へ自然に流れて満たしていきます。" },
+};
+
+// ══════ 12柱ごとの魂の使命（前世・カルマ・今世のテーマ） ══════
+const SOUL_MISSION = {
+  "牡羊座": "前世では、誰かのために先陣を切って戦った魂だと伝えられています。その記憶が、今世でも「最初の一歩を引き受ける」役回りとして表れます。魂の課題は、勝つことより始めること——結果を出す前に評価を求めすぎない練習が、あなたを次の段階へ進めます。",
+  "牡牛座": "前世では、豊かな土地を守り育てる役目を担っていたと伝えられています。今世でも「価値あるものを見極め、じっくり育てる」ことがあなたの使命。魂の課題は、失うことへの恐れを手放し、変化そのものも豊かさの一部だと知ることです。",
+  "双子座": "前世では、遠く離れた場所の情報や言葉を運ぶ役目を担っていたと伝えられています。今世では、知識や人と人をつなぐことが使命に。魂の課題は、深く知ることを恐れないこと——広さと深さは、本来矛盾しません。",
+  "蟹座": "前世では、家族や共同体を守る番人だったと伝えられています。今世でも「居場所をつくる人」であることが使命。魂の課題は、守ることと抱え込むことの境界を知り、自分自身も誰かに守られていいと許すことです。",
+  "獅子座": "前世では、人々の前に立ち、希望の象徴として輝く役目を担っていたと伝えられています。今世でも「光であること」が使命。魂の課題は、賞賛がなくても自分の価値を信じること——輝きの源は、拍手の中ではなく自分自身の中にあります。",
+  "乙女座": "前世では、細やかな手仕事や癒しの技をもって人を支えていたと伝えられています。今世でも「整え、支える」ことが使命。魂の課題は、完璧でない自分をも受け入れること——不完全さの中にこそ、あなたの人間らしい魅力があります。",
+  "天秤座": "前世では、争いを調停し、美と均衡をもたらす役目を担っていたと伝えられています。今世でも「調和を生み出す」ことが使命。魂の課題は、誰かに合わせる前に、自分自身の望みを先に聞いてあげることです。",
+  "蠍座": "前世では、生と死、終わりと始まりの境界に立ち会う役目を担っていたと伝えられています。今世でも「深い変容を導く」ことが使命。魂の課題は、信頼することを恐れないこと——深く関わるほど、失う怖さも大きくなりますが、それを超えた先に本物の絆があります。",
+  "射手座": "前世では、遠い地へ真理を求めて旅する探求者だったと伝えられています。今世でも「意味を探し、伝える」ことが使命。魂の課題は、答えを急がないこと——旅の途中そのものに、すでに学びがあります。",
+  "山羊座": "前世では、長い年月をかけて何かを築き上げる責任者だったと伝えられています。今世でも「土台を作り、後世に残す」ことが使命。魂の課題は、成果が出るまでの時間を信じること——あなたの忍耐は、必ず形になります。",
+  "水瓶座": "前世では、時代の常識を疑い、新しい仕組みを提案する役目を担っていたと伝えられています。今世でも「未来を先取りする」ことが使命。魂の課題は、孤独を恐れないこと——新しい風は、最初はいつも一人から吹き始めます。",
+  "魚座": "前世では、境界を越えて人々の痛みに寄り添う癒し手だったと伝えられています。今世でも「共感し、包み込む」ことが使命。魂の課題は、他者と自分の感情を混同しないこと——あなたが満たされてはじめて、その慈愛は本当の力になります。",
+};
+
+// ══════ 元素ごとの鑑定文 ══════
+const ELEMENT_PROFILE = {
+  "火": {
+    advice: "髪は、あなたの内なる炎の勢いを映す鏡です。調子の良いときの髪は根元からふんわり立ち上がり、疲れているときはトップから元気を失っていきます。動きと立体感のあるスタイルが、内なる炎を引き出す鍵。ただし攻めすぎたカラーやパーマの繰り返しは炎の敵です。挑戦するケアと労わるケアを交互に——それが火の人の鉄則です。",
+    flow: "火の運気は、一直線には燃え続けません。ぱっと燃え上がる時期と、熾火のように静かに力を蓄える時期が、交互にやってきます。もしいま停滞を感じているなら、それは火が消えかけているのではなく、次に大きく燃えるための準備の時間。焦って薪をくべすぎないことが、結局いちばんの近道になります。",
+    color: "朱色・オレンジ・ゴールド", item: "キャンドル、朝日を浴びる習慣", spot: "高台や朝日の見える場所" },
+  "地": {
+    advice: "髪は、あなたの根の深さを映す鏡です。地の人の運気は髪のツヤに表れやすく、ツヤが育つほど暮らしの土台も安定していきます。急なイメージチェンジより、少しずつ整えていく変化が吉。上質なケアをこつこつ続けることが、そのまま運気の積み立てになります。",
+    flow: "地の運気は、四季のようにゆっくり巡ります。種を蒔く時期、根を張る時期、実る時期——いま結果が見えなくても、地中では確実に根が伸びています。10年単位で振り返ったとき「あの遠回りが全部つながっていた」と気づくのが、地の人の人生の美しさです。",
+    color: "深緑・ブラウン・テラコッタ", item: "観葉植物、木のくし", spot: "大きな木のある神社や森" },
+  "風": {
+    advice: "髪は、あなたの風通しを映す鏡です。重たいスタイルや伸ばしっぱなしは、風の人の運気を止めてしまいます。軽さ・動き・抜け感——風の通り道のあるスタイルが、新しい出会いと情報を運んできます。定期的に手を入れて、風の通り道を保ってください。",
+    flow: "風の運気は、向きを変えながら進みます。追い風の時期は一気に進み、向かい風の時期は方向転換の合図。同じ場所で踏ん張り続けるより、風向きに合わせて帆を張り替えるほうが、風の人は遠くまで行けます。変わり身の早さは、あなたの美徳です。",
+    color: "白・水色・ラベンダー", item: "風鈴、窓を開ける習慣", spot: "見晴らしの良い岬や、橋のある場所" },
+  "水": {
+    advice: "髪は、あなたの心のうるおいを映す鏡です。水の人の運気は髪の水分量と連動していて、パサつきは心の渇きのサインでもあります。保湿を軸にしたケアが何よりの開運。髪が潤うほどに直感が冴え、良い縁が静かに流れ込んできます。",
+    flow: "水の運気は、流れる場所を選びながら進みます。堰き止められたように感じる時期は、実は水位を上げている時間。あるとき一気に流れ出します。無理に岩を砕くより、回り道の水路を見つけるのが水の人の知恵です。",
+    color: "藍色・青・シルバー", item: "湯船に浸かる時間、ガラスの器", spot: "清らかな川や海辺、水にまつわる聖地" },
+};
+
+const NUM_PROFILE = {
+  1: { essence: "「はじまり」の数。ゼロから何かを立ち上げる力を持ち、先頭に立つときに最も輝きます。人の後ろを歩くより、小さくてもいいから自分の道を切り拓くことで、運の歯車が回りはじめます。",
+      turn: "転機は「決断した瞬間」に訪れます。迷っている時間がいちばん運気を消耗させる人。新しい髪型への挑戦も、道を開く小さな儀式になります。" },
+  2: { essence: "「調和」の数。人と人の間に立ち、場を和らげる天性の力があります。目立つ成果より、あなたがいることで物事が円滑に進む——それこそが才能です。",
+      turn: "転機は「良い相棒」と出会ったとき。ひとりで抱え込まず、誰と組むかを選ぶことが、人生の分かれ道になります。" },
+  3: { essence: "「創造」の数。遊び心と表現力にあふれ、楽しいことのそばに運が集まります。真面目にやるより、面白がってやるほうが結果が出るタイプです。",
+      turn: "転機は「楽しい」と感じた方を選んだとき。損得で選ぶと運気が細ります。遊び心のあるヘアアレンジも幸運の呼び水に。" },
+  4: { essence: "「土台」の数。こつこつと積み上げる誠実さが最大の武器で、周りからの信頼は絶大です。地味に見える継続が、気づけば大きな城になっています。",
+      turn: "転機は「習慣を変えたとき」。毎日の小さな置き換え——頭皮ケアひとつでも——が、人生の土台ごと変えていきます。" },
+  5: { essence: "「変化」の数。同じ場所に留まらないことで運気が磨かれる、冒険者の星です。環境を変えること、旅、新しい人との出会い——動くたびに視野が広がります。",
+      turn: "転機は「移動」とともに訪れます。行き詰まったら、まず場所を変えてみる。イメージチェンジも立派な移動のひとつです。" },
+  6: { essence: "「愛」の数。人の世話を焼き、育て、守ることに深い喜びを感じる質です。あなたの手を通ったものは、人も物も、不思議と艶やかになっていきます。",
+      turn: "転機は「誰かのために動いたとき」。与えたものが、形を変えて自分に還ってくる星回りです。ただし自分を後回しにしすぎないこと。" },
+  7: { essence: "「探求」の数。表面では満足できず、物事の本質まで掘り下げたい魂です。ひとりの時間が何よりの充電になる、静かな賢者の質を持っています。",
+      turn: "転機は「学び直したとき」。専門性を一段深めるたびに、人生のステージが上がります。自分だけの定番スタイルを極めるのも吉。" },
+  8: { essence: "「豊かさ」の数。現実を動かす力と器の大きさを持ち、本気を出したときの実現力は12の数のなかで随一です。",
+      turn: "転機は「投資したとき」。お金・時間・信頼——先に差し出したぶんだけ、大きくなって還ります。上質なケアへの投資もそのひとつ。" },
+  9: { essence: "「完成と手放し」の数。物事を締めくくり、次の循環へ渡す役割を持っています。視野が広く、損得を超えたところで動けるのがあなたの品格です。",
+      turn: "転機は「手放したとき」。終わらせる勇気が、新しい始まりを連れてきます。思い切ったカットが循環を生むこともあります。" },
+  11: { essence: "「直感」のマスターナンバー。理屈より先に答えが降りてくる、鋭い感性を持っています。ピンときたことは、だいたい正しい人です。",
+      turn: "転機は「直感に従ったとき」。周りの反対より、自分の胸のざわめきを信じてください。髪型も、ピンときたら迷わず。" },
+  22: { essence: "「大器」のマスターナンバー。夢を現実の形にする、大きな設計図を持って生まれています。時間はかかっても、届く場所の高さが違います。",
+      turn: "転機はゆっくり、しかし確実に訪れます。10年単位の視点を持てたとき、運命が大きく動き出します。髪も長い目で育てて。" },
+  33: { essence: "「無償の愛」のマスターナンバー。損得を超えて人を癒す、稀有な魂です。あなたが整った姿でいるだけで、周りの空気が柔らかくなります。",
+      turn: "転機は「自分を後回しにするのをやめたとき」。自分を満たすことが、結果的にまわりの人を救います。" },
+};
+
+const BLOOD_MSG = {
+  "A": "A型の丁寧さは、細部に宿る運を拾い上げます。",
+  "B": "B型のマイペースは、独自の道を歩ける才能です。",
+  "O": "O型のおおらかさは、人を惹きつける引力になります。",
+  "AB": "AB型の二面性は、視点を自在に切り替えられる知性の証です。",
+};
+
+const BIRTHTIME_MSG = {
+  "朝": "朝生まれの人は、物事の立ち上げに縁があります。新しいことは午前中に始めると吉。",
+  "昼": "昼生まれの人は、表舞台で力を発揮する質。人前に出ることを恐れないでください。",
+  "夕方": "夕方生まれの人は、まとめ役・仕上げ役の星。物事の締めくくりで真価を発揮します。",
+  "夜": "夜生まれの人は、深く考える力に恵まれています。大事な決断は夜にじっくりと。",
+  "深夜": "深夜生まれの人は、人と違う視点を持つ星。少数派であることを誇ってください。",
+};
+
+const HAIR_LINES = {
+  thickness: { "細い": "細い髪は、繊細な感受性のしるし。", "普通": "程よい太さの髪は、バランス感覚のしるし。", "太い": "太い髪は、あふれる生命力のしるし。" },
+  curl: { "直毛": "まっすぐな髪には、一本気な意志が宿ります。", "波状": "ゆるやかなうねりは、しなやかな心の表れです。", "強いくせ毛": "強いクセは、抑えきれない個性と創造力の泉です。" },
+  cowlick: { "右巻き": "右巻きのつむじは、流れに乗るのが上手な人のしるしと言われます。", "左巻き": "左巻きのつむじは、自分だけの風を起こす人のしるしと言われます。", "2つ以上": "ふたつのつむじは、ふたつの才能を持つしるしと言われます。" },
+};
+
+// つむじの位置の読み解き
+const COWLICK_POS_LINES = {
+  "前寄り": "前寄りのつむじは、考えるより先に動ける行動派のしるし。前髪の立ち上がりを活かすスタイルが運を呼びます。",
+  "頭頂部": "頭頂部のつむじは、バランス感覚に恵まれた王道タイプのしるし。トップのボリュームが運気の要です。",
+  "後ろ寄り": "後ろ寄りのつむじは、思慮深く粘り強い人のしるし。後ろ姿に品が宿るタイプです。",
+};
+
+// 干支（生まれ年の十二支）
+const ETO_LIST = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+const ETO_MSG = {
+  "子": "機転と社交の星。流れの変化を誰より早く察知して動けます。",
+  "丑": "着実に歩む努力の星。焦らぬ積み重ねが最後に大きく実ります。",
+  "寅": "勇気と挑戦の星。迷ったときの決断の速さが運を呼び込みます。",
+  "卯": "柔和と飛躍の星。人当たりの良さがご縁をどこまでも広げます。",
+  "辰": "大志の星。大きな夢ほどあなたに似合い、周りを巻き込みます。",
+  "巳": "探究と再生の星。脱皮を繰り返すたびに、深く強くなります。",
+  "午": "陽気と行動の星。立ち止まるより、動きながら考えるのが正解。",
+  "未": "穏和と共感の星。あなたのそばの安心感が、人を集めます。",
+  "申": "器用と知恵の星。遊び心こそが、仕事でも一番の武器になります。",
+  "酉": "几帳面と美意識の星。整える力が、周りの信頼を生み続けます。",
+  "戌": "忠実と正義の星。一度信じた道と人を、最後まで守り抜きます。",
+  "亥": "純粋と一直線の星。まっすぐな情熱が、厚い壁も突き破ります。",
+};
+function getEto(birthdateStr) {
+  const year = new Date(birthdateStr).getFullYear();
+  return ETO_LIST[(year - 4 + 12000) % 12];
+}
+
+// 十二時辰（出生時刻の刻）
+const SHICHEN = [
+  { name: "子の刻", from: 23, to: 1,  msg: "静けさの中で物事を始める力を授かる刻。夜にひらめく直感は、だいたい当たります。" },
+  { name: "丑の刻", from: 1,  to: 3,  msg: "粘り強さを授かる刻。誰も見ていないところでの努力が、必ず形になります。" },
+  { name: "寅の刻", from: 3,  to: 5,  msg: "夜明けを呼ぶ刻。困難な場面ほど、あなたの本領が発揮されます。" },
+  { name: "卯の刻", from: 5,  to: 7,  msg: "日の出の刻。人に希望を運ぶ、朝日のような明るさを持っています。" },
+  { name: "辰の刻", from: 7,  to: 9,  msg: "上昇の刻。一度勢いに乗ったあなたは、誰にも止められません。" },
+  { name: "巳の刻", from: 9,  to: 11, msg: "知恵の刻。物事の本質を、静かに深く見抜く目を持っています。" },
+  { name: "午の刻", from: 11, to: 13, msg: "太陽が真上に昇る刻。堂々とした存在感そのものが、あなたの武器です。" },
+  { name: "未の刻", from: 13, to: 15, msg: "和らぎの刻。あなたがいるだけで、場の空気が柔らかくなります。" },
+  { name: "申の刻", from: 15, to: 17, msg: "才気の刻。器用さと機転で、ふさがった道も開いていけます。" },
+  { name: "酉の刻", from: 17, to: 19, msg: "実りの刻。締めくくり上手なあなたに、信頼が集まります。" },
+  { name: "戌の刻", from: 19, to: 21, msg: "守りの刻。義理堅く、大切な人を守り抜く星です。" },
+  { name: "亥の刻", from: 21, to: 23, msg: "蓄えの刻。内に秘めた情熱の深さは、誰にも測れません。" },
+];
+function getShichen(timeStr) {
+  if (!timeStr) return null;
+  const h = parseInt(timeStr.split(":")[0], 10);
+  if (isNaN(h)) return null;
+  return SHICHEN.find(s => s.from > s.to ? (h >= s.from || h < s.to) : (h >= s.from && h < s.to)) || null;
+}
+
+const SCALP_ADVICE = {
+  "乾燥": "洗浄力のやさしいシャンプーとぬるま湯洗いで、頭皮のうるおいを守りましょう。",
+  "脂性": "洗いすぎは逆効果。夜1回の丁寧な洗髪と、頭皮クレンジングを週1回が目安です。",
+  "普通": "いまのバランスは良好。季節の変わり目だけケアを一段丁寧に。",
+  "混合": "部位で状態が違うタイプ。トップは軽く、乾きやすい部分は保湿を意識して。",
+};
+
+const FACE_STYLE = {
+  "丸": "トップに高さを出し、縦のラインを意識したスタイルがすっきり映えます。",
+  "卵": "どんなスタイルも似合う理想のバランス。なりたいイメージを素直に追いかけて。",
+  "面長": "サイドにボリュームを、前髪で額を柔らかく。横の広がりが優しさを生みます。",
+  "四角": "柔らかいレイヤーと曲線的なシルエットで、輪郭の印象がぐっと和らぎます。",
+  "逆三角": "あご周りに動きを出すひし形シルエットが、シャープさに温かみを添えます。",
+};
+
+const WORRY_MSG = {
+  "恋愛・結婚": {
+    "火": "恋の主導権はあなた側にあります。自分から動いた分だけ、火は大きく育ちます。",
+    "地": "焦らず育てる恋が吉。ゆっくり根を張る関係ほど、長く花が咲きます。",
+    "風": "縁の入り口は「会話」。軽やかなおしゃべりの中に、出会いの種があります。",
+    "水": "感じたことを言葉にする勇気が鍵。恋に関しては、あなたの直感はよく当たります。",
+  },
+  "仕事": {
+    "火": "迷ったら、挑戦する側へ。あなたの火は、新しい舞台でこそ輝きます。",
+    "地": "積み上げてきたものが一番の財産。続けてきたことの中に、次の扉があります。",
+    "風": "人と人をつなぐ役回りが天職の入り口。風通しの良い場所を選んでください。",
+    "水": "人の気持ちがわかる力こそ最大の武器。誰かを支える仕事で運が巡ります。",
+  },
+  "お金": {
+    "火": "使うことで巡るタイプ。自分の学びへの投資が、一番利回りが良さそうです。",
+    "地": "コツコツ貯める力は天下一品。「仕組みで貯める」工夫が金運を安定させます。",
+    "風": "情報が金運の鍵。人との会話から、思わぬ入り口が舞い込みます。",
+    "水": "気持ちで財布がゆるむタイプ。心が満ちているとき、金運も満ちてきます。",
+  },
+  "家族・人間関係": {
+    "火": "まっすぐな正直さがあなたの魅力。ただし言葉の火加減だけ、少しやさしく。",
+    "地": "あなたの安定感が、周りの拠り所になっています。抱え込まず、頼ることも吉。",
+    "風": "あなたは距離感の名人。合わない人とは「風のように」さらっと、が正解です。",
+    "水": "相手の気持ちを汲みすぎて疲れやすい時期。境界線を引くことも、愛情のうちです。",
+  },
+  "健康": {
+    "火": "頑張りすぎのサインは首から上に出やすいタイプ。頭皮の硬さは「休め」の合図です。",
+    "地": "習慣の力で整うタイプ。寝る時間をそろえるだけで、運気ごと立て直せます。",
+    "風": "気分と体調が連動するタイプ。深呼吸と換気、暮らしに風を入れることが薬になります。",
+    "水": "水分と睡眠が開運の土台。湯船に浸かる日を増やすと、流れが良くなります。",
+  },
+  "自分の生き方": {
+    "火": "「何がしたいか」より「何に燃えるか」。心が熱くなる方角が、あなたの道です。",
+    "地": "遠回りに見えた道が、実は一番の近道だったと、あとで分かる星回りです。",
+    "風": "ひとつに絞れないのは欠点ではなく才能。複数の顔を持って生きるのが吉です。",
+    "水": "感じる力があなたの羅針盤。静かな時間が、答えを連れてきます。",
+  },
+};
+
+const DAMAGE_ADVICE = {
+  "ほぼなし": "髪は健やかそのもの。この状態を守る「攻めないケア」を続けましょう。",
+  "少しある": "週1〜2回の集中トリートメントで、いまが立て直しの好機です。",
+  "かなりある": "まずは補修を最優先に。カットで傷んだ部分を手放すのも、立派な浄化です。",
+};
+
+function buildResult(a) {
+  const zodiac = getZodiac(a.birthdate);
+  const num = getNumerology(a.birthdate);
+  const kami = ZODIAC_KAMI[zodiac.name];
+  const elem = ELEMENT_PROFILE[zodiac.element];
+  const numP = NUM_PROFILE[num] || { essence: "", turn: "" };
+  const concerns = Array.isArray(a.concerns) ? a.concerns.filter(c => c !== "特になし") : [];
+
+  const hairLines = [
+    HAIR_LINES.thickness[a.thickness],
+    HAIR_LINES.curl[a.curl],
+    HAIR_LINES.cowlick[a.cowlick],
+    ...(Array.isArray(a.cowlickPos) ? a.cowlickPos.map(p => COWLICK_POS_LINES[p]) : []),
+  ].filter(Boolean);
+
+  const eto = getEto(a.birthdate);
+  const shichen = getShichen(a.birthTimeExact);
+
+  let careLines = [];
+  if (a.scalpType && SCALP_ADVICE[a.scalpType]) careLines.push(SCALP_ADVICE[a.scalpType]);
+  if (a.damage && DAMAGE_ADVICE[a.damage]) careLines.push(DAMAGE_ADVICE[a.damage]);
+  if (a.stress === "高い") careLines.push("ストレスは頭皮から硬くします。シャンプー時に1分だけ、頭皮をゆっくりほぐす時間を。");
+  if (a.rhythm === "夜型" || a.rhythm === "不規則") careLines.push("髪は眠っている間に育ちます。まずは眠りの質をひとつだけ整えることから。");
+  if (a.diet === "偏りがち" || a.diet === "外食が多い") careLines.push("髪はタンパク質でできています。食卓に一品、豆や卵や魚を足すことが未来の髪への祈りです。");
+
+  const age = getCurrentAge(a.birthdate);
+  const cycle = getLifeCycle(age, zodiac.element);
+
+  return {
+    zodiac: zodiac.name,
+    element: zodiac.element,
+    numerology: num,
+    kamiName: kami.kami,
+    kamiWords: kami.words,
+    kamiImg: kami.img,
+    nature: kami.nature,
+    soulMission: SOUL_MISSION[zodiac.name] || "",
+    elementAdvice: elem.advice,
+    flow: elem.flow,
+    luckyColor: elem.color,
+    luckyItem: elem.item,
+    luckySpot: elem.spot,
+    numerologyMsg: numP.essence,
+    numerologyTurn: numP.turn,
+    bloodMsg: BLOOD_MSG[a.blood] || "",
+    timeMsg: BIRTHTIME_MSG[a.birthtime] || "",
+    eto,
+    etoMsg: `${eto}年生まれ——${ETO_MSG[eto]}`,
+    shichenName: shichen ? shichen.name : "",
+    shichenMsg: shichen ? `${shichen.name}（${a.birthTimeExact}）の生まれ——${shichen.msg}` : "",
+    hairLines,
+    styleAdvice: a.faceShape ? FACE_STYLE[a.faceShape] : "",
+    careLines,
+    concerns,
+    age,
+    cycle,
+  };
+}
+
+// ══════ 生まれてからの年数で読む「人生の周期」 ══════
+function getCurrentAge(birthdateStr) {
+  const b = new Date(birthdateStr);
+  const now = new Date();
+  let age = now.getFullYear() - b.getFullYear();
+  const m = now.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < b.getDate())) age--;
+  return age;
+}
+
+function getLifeCycle(age, element) {
+  const phaseLen = 7;
+  const phaseIndex = Math.floor(age / phaseLen) % 4;
+  const phaseYearInCycle = age % phaseLen;
+  const yearsToNext = phaseLen - phaseYearInCycle;
+  const phases = ["種をまく時期", "育てる時期", "花を咲かせる時期", "実りを収める時期"];
+  const phaseAdvice = {
+    "種をまく時期": "新しいことを始めるほど、後の実りが大きくなる時期です。小さな一歩を恐れないでください。",
+    "育てる時期": "地道な積み重ねが力になる時期です。派手さより、続けることが何よりの成果になります。",
+    "花を咲かせる時期": "これまでの努力が、周りから見える形になって表れやすい時期です。遠慮せず前に出てください。",
+    "実りを収める時期": "得たものを整理し、本当に大切なものを選び取る時期です。手放すことも、豊かさの一部です。",
+  };
+  const phase = phases[phaseIndex];
+  return {
+    phase,
+    advice: phaseAdvice[phase],
+    yearsToNext,
+    nextAge: age + yearsToNext,
+  };
+}
+
+/* ══════════════════════════════════════
+   画面制御
+   ══════════════════════════════════════ */
+let currentStep = 0;
+let answers = {};
+
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0, 0);
+}
+function goHome() { show("start"); }
+
+function startDiagnosis() {
+  currentStep = 0;
+  answers = {};
+  renderStep();
+  show("quiz");
+}
+
+function renderStep() {
+  const step = STEPS[currentStep];
+  document.getElementById("progressBar").style.width = ((currentStep) / STEPS.length * 100) + "%";
+  document.getElementById("stepLabel").textContent = `${currentStep + 1} / ${STEPS.length} — ${step.label}`;
+  document.getElementById("prevBtn").style.visibility = currentStep === 0 ? "hidden" : "visible";
+  document.getElementById("nextBtn").textContent = currentStep === STEPS.length - 1 ? "結果を見る" : "つぎへ";
+
+  let html = `<h2 class="q-title">${step.title}</h2>`;
+  for (const f of step.fields) {
+    html += `<div class="field"><label class="name">${f.label}</label>`;
+    const saved = answers[f.key];
+    if (f.type === "text") {
+      html += `<input type="text" id="f_${f.key}" placeholder="${f.placeholder || ''}" value="${saved || ''}">`;
+    } else if (f.type === "date") {
+      html += `<input type="date" id="f_${f.key}" value="${saved || ''}">`;
+    } else if (f.type === "time") {
+      html += `<input type="time" id="f_${f.key}" value="${saved || ''}">`;
+    } else if (f.type === "textarea") {
+      html += `<textarea id="f_${f.key}" placeholder="${f.placeholder || ''}">${saved || ''}</textarea>`;
+    } else if (f.type === "choice") {
+      html += `<div class="choices" id="f_${f.key}">`;
+      for (const opt of f.options) {
+        const checked = saved === opt ? "checked" : "";
+        html += `<label><input type="radio" name="f_${f.key}" value="${opt}" ${checked}><span>${opt}</span></label>`;
+      }
+      html += `</div>`;
+    } else if (f.type === "multi") {
+      html += `<div class="choices" id="f_${f.key}">`;
+      for (const opt of f.options) {
+        const checked = Array.isArray(saved) && saved.includes(opt) ? "checked" : "";
+        html += `<label><input type="checkbox" name="f_${f.key}" value="${opt}" ${checked}><span>${opt}</span></label>`;
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+  }
+  document.getElementById("quizBody").innerHTML = html;
+}
+
+function collectStep() {
+  const step = STEPS[currentStep];
+  for (const f of step.fields) {
+    if (f.type === "text" || f.type === "date" || f.type === "time" || f.type === "textarea") {
+      answers[f.key] = document.getElementById("f_" + f.key).value.trim();
+    } else if (f.type === "choice") {
+      const sel = document.querySelector(`input[name="f_${f.key}"]:checked`);
+      answers[f.key] = sel ? sel.value : "";
+    } else if (f.type === "multi") {
+      answers[f.key] = [...document.querySelectorAll(`input[name="f_${f.key}"]:checked`)].map(i => i.value);
+    }
+  }
+}
+
+function nextStep() {
+  collectStep();
+  const err = document.getElementById("formError");
+  err.textContent = "";
+  if (currentStep === 0) {
+    if (!answers.name) { err.textContent = "お名前を入力してください"; return; }
+    if (!answers.birthdate) { err.textContent = "生年月日を入力してください（占いに使います）"; return; }
+  }
+  if (currentStep < STEPS.length - 1) {
+    currentStep++;
+    renderStep();
+    window.scrollTo(0, 0);
+  } else {
+    finishDiagnosis();
+  }
+}
+
+function prevStep() {
+  collectStep();
+  if (currentStep > 0) { currentStep--; renderStep(); window.scrollTo(0, 0); }
+}
+
+function finishDiagnosis() {
+  const result = buildResult(answers);
+  const record = {
+    id: Date.now(),
+    createdAt: new Date().toISOString(),
+    answers: { ...answers },
+    result,
+  };
+  saveRecord(record);
+  syncRecord(record);
+  renderResult(record);
+  show("result");
+}
+
+function renderResult(record) {
+  const a = record.answers, r = record.result;
+  const dateStr = new Date(record.createdAt).toLocaleDateString("ja-JP");
+  let html = `
+    <div class="kami-name" style="background-image: linear-gradient(rgba(15,30,28,0.25), rgba(15,30,28,0.6)), url('${r.kamiImg.replace(".svg", ".jpg")}'), url('${r.kamiImg}'); background-size: cover; background-position: center;">
+      <p class="small-label">あなたの髪の神様</p>
+      <h2>${r.kamiName}</h2>
+      <p class="kami-words">${r.kamiWords}</p>
+      <div class="badge-row">
+        <span class="badge">${r.zodiac}</span>
+        <span class="badge">${r.element}の質</span>
+        <span class="badge">数秘 ${r.numerology}</span>
+        <span class="badge">${r.eto}年</span>
+        ${r.shichenName ? `<span class="badge">${r.shichenName}</span>` : ""}
+        ${a.blood && a.blood !== "不明" ? `<span class="badge">${a.blood}型</span>` : ""}
+      </div>
+    </div>
+    <div class="result-card">
+      <h3>あなたという人 — 生まれ持った本質</h3>
+      <p>${r.nature}</p>
+      <p>${r.numerologyMsg}</p>
+      <p>${r.etoMsg}</p>
+      ${r.shichenMsg ? `<p>${r.shichenMsg}</p>` : (r.timeMsg ? `<p>${r.timeMsg}</p>` : "")}
+      ${r.bloodMsg ? `<p>${r.bloodMsg}</p>` : ""}
+    </div>
+    <div class="result-card">
+      <h3>魂の使命 — 今世のテーマ</h3>
+      <p>${r.soulMission}</p>
+    </div>
+    <div class="result-card">
+      <h3>髪が語るあなた</h3>
+      ${r.hairLines.map(l => `<p>${l}</p>`).join("")}
+      <p>${r.elementAdvice}</p>
+    </div>
+    <div class="result-card">
+      <h3>いまあなたがいる、人生の周期</h3>
+      <p>${r.age}歳のあなたは、いま「${r.cycle.phase}」にいます。${r.cycle.advice}</p>
+      <p>この周期は${r.cycle.nextAge}歳ごろに次の段階へ移ります。人生は一直線ではなく、種をまき、育て、花を咲かせ、実りを収める——この四つの季節を何度も繰り返しながら深まっていきます。</p>
+    </div>
+    <div class="result-card">
+      <h3>運気の流れと、転機</h3>
+      <p>${r.flow}</p>
+      <p>${r.numerologyTurn}</p>
+    </div>
+    <div class="result-card">
+      <h3>開運の手引き</h3>
+      <p>ラッキーカラー：${r.luckyColor}</p>
+      <p>ラッキーナンバー：${r.numerology}</p>
+      <p>開運アイテム：${r.luckyItem}</p>
+      <p>力の還る場所：${r.luckySpot}</p>
+      <p>ラッキーカラーは、次のヘアカラーやお手入れの小物にさりげなく取り入れるのがおすすめです。</p>
+    </div>`;
+  if (r.styleAdvice) {
+    html += `
+    <div class="result-card">
+      <h3>あなたに似合うスタイルの方向</h3>
+      <p>${r.styleAdvice}</p>
+      ${a.idealImage ? `<p>なりたいイメージ「${a.idealImage}」——その願いに、骨格と星は味方しています。</p>` : ""}
+    </div>`;
+  }
+  if (r.careLines.length) {
+    html += `
+    <div class="result-card">
+      <h3>本来の自分へ還るケア</h3>
+      ${r.careLines.map(l => `<p>・${l}</p>`).join("")}
+    </div>`;
+  }
+  if (a.topWorry && a.topWorry !== "特にない" && WORRY_MSG[a.topWorry]) {
+    const msg = WORRY_MSG[a.topWorry][r.element] || "";
+    html += `
+    <div class="result-card">
+      <h3>いちばんの気がかり —「${a.topWorry}」</h3>
+      <p>${msg}</p>
+      ${a.worryDetail ? `<p>「${a.worryDetail}」——その迷いも、ここまでの流れの一部です。答えはすでに、あなたの中にあります。</p>` : ""}
+    </div>`;
+  }
+  if (r.concerns.length) {
+    html += `
+    <div class="result-card">
+      <h3>いまの髪の悩みへ</h3>
+      <p>「${r.concerns.join("・")}」——悩みは、髪があなたに送っているサインです。整えるたびに、少しずつ本来の自分へ近づいていきます。</p>
+    </div>`;
+  }
+  html += renderOutcomeSection(record);
+  html += `<p style="text-align:center; font-size:0.8rem; color:#8a8577; margin-top:1rem;">${a.name} さま ／ ${dateStr}</p>`;
+  html += `<p style="text-align:center; font-size:0.72rem; color:#a8a396; margin-top:0.3rem;">※この占いは、楽しんでいただくためのものです</p>`;
+  document.getElementById("resultBody").innerHTML = html;
+}
+
+function renderOutcomeSection(record) {
+  if (record.lifeStory) {
+    const o = record.lifeStory;
+    return `<div class="outcome-box">
+      <h3>あなたの人生の記録</h3>
+      <p>鑑定の当てはまり：${o.fit || "—"}</p>
+      ${o.turningPoint ? `<p>人生の転機：${o.turningPoint}</p>` : ""}
+      ${o.effort ? `<p>頑張った時期：${o.effort}</p>` : ""}
+      ${o.loveFamily ? `<p>恋愛・家庭：${o.loveFamily}</p>` : ""}
+      ${o.lesson ? `<p>学び・大切にしていること：${o.lesson}</p>` : ""}
+    </div>`;
+  }
+  return `<div class="outcome-box">
+    <h3>あなたの人生を、少しだけ聞かせてください</h3>
+    <p style="font-size:0.85rem; color:#6b665d; margin-bottom:1.2rem;">鑑定はいかがでしたか。あなたが歩んでこられた道のりそのものが、この占いを育てる一番の知恵になります。話せる範囲で大丈夫です。<br><span style="font-size:0.75rem; color:#a8a396;">※ご回答は、占いをより良くするための研究データとして記録されます</span></p>
+    <div class="field"><label class="name">この鑑定は、当てはまっていましたか？</label><div class="choices">
+      ${["よく当たっている","半分くらい","あまり"].map(o => `<label><input type="radio" name="o_fit" value="${o}"><span>${o}</span></label>`).join("")}
+    </div></div>
+    <div class="field"><label class="name">これまでの人生で、一番の転機はどんなことでしたか？</label>
+      <textarea id="o_turning" placeholder="例：30歳での転職、結婚、引っ越しなど"></textarea></div>
+    <div class="field"><label class="name">一番頑張った時期・乗り越えたことは？</label>
+      <textarea id="o_effort" placeholder="例：子育てと仕事の両立の時期"></textarea></div>
+    <div class="field"><label class="name">恋愛や家族のこれまでを、話せる範囲で</label>
+      <textarea id="o_love" placeholder="任意です"></textarea></div>
+    <div class="field"><label class="name">人生で学んだこと・大切にしていることは？</label>
+      <textarea id="o_lesson" placeholder="例：無理をしないこと"></textarea></div>
+    <button class="btn small" onclick="saveLifeStory(${record.id})">記録する</button>
+  </div>`;
+}
+
+function saveLifeStory(id) {
+  const list = loadRecords();
+  const rec = list.find(r => r.id === id);
+  if (!rec) return;
+  const fit = document.querySelector('input[name="o_fit"]:checked');
+  rec.lifeStory = {
+    fit: fit ? fit.value : "",
+    turningPoint: document.getElementById("o_turning").value.trim(),
+    effort: document.getElementById("o_effort").value.trim(),
+    loveFamily: document.getElementById("o_love").value.trim(),
+    lesson: document.getElementById("o_lesson").value.trim(),
+    recordedAt: new Date().toISOString(),
+  };
+  localStorage.setItem(STORE_KEY, JSON.stringify(list));
+  syncRecord(rec);
+  renderResult(rec);
+}
+
+/* ══════════════════════════════════════
+   記録の保存・一覧
+   ══════════════════════════════════════ */
+const STORE_KEY = "kamiuranai_records";
+
+function loadRecords() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+  catch { return []; }
+}
+function saveRecord(record) {
+  const list = loadRecords();
+  list.unshift(record);
+  localStorage.setItem(STORE_KEY, JSON.stringify(list));
+}
+function deleteRecord(id) {
+  if (!confirm("この記録を削除しますか？")) return;
+  const list = loadRecords().filter(r => r.id !== id);
+  localStorage.setItem(STORE_KEY, JSON.stringify(list));
+  showRecords();
+}
+
+function showRecords() {
+  const list = loadRecords();
+  const el = document.getElementById("recordList");
+  if (!list.length) {
+    el.innerHTML = `<p class="empty">まだ記録がありません。<br>最初の占いをはじめましょう。</p>`;
+  } else {
+    el.innerHTML = list.map(r => `
+      <div class="record" onclick="openRecord(${r.id})">
+        <div class="info">
+          <div class="name">${r.answers.name || "（無名）"}${r.lifeStory ? '<span class="rec-badge">人生の記録あり</span>' : '<span class="rec-badge todo">未記録</span>'}</div>
+          <div class="meta">${new Date(r.createdAt).toLocaleString("ja-JP")} ／ ${r.result.kamiName} ／ ${r.result.zodiac}・数秘${r.result.numerology}</div>
+        </div>
+        <button class="del" onclick="event.stopPropagation(); deleteRecord(${r.id})">削除</button>
+      </div>`).join("");
+  }
+  show("records");
+}
+
+function openRecord(id) {
+  const rec = loadRecords().find(r => r.id === id);
+  if (!rec) return;
+  renderResult(rec);
+  show("result");
+}
+
+function exportRecords() {
+  const list = loadRecords();
+  if (!list.length) { alert("記録がありません"); return; }
+  downloadBlob(JSON.stringify(list, null, 2), "application/json", `kamiuranai_records_${today()}.json`);
+}
+
+function downloadBlob(content, type, filename) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const aTag = document.createElement("a");
+  aTag.href = url;
+  aTag.download = filename;
+  aTag.click();
+  URL.revokeObjectURL(url);
+}
+function today() { return new Date().toISOString().slice(0, 10); }
+
+/* ══════════════════════════════════════
+   CSV書き出し（1件 = 1行に平坦化）
+   ══════════════════════════════════════ */
+const CSV_HEADERS = ["ID","診断日時","名前","生年月日","血液型","生まれた時間帯","出生時刻","出生地",
+  "頭皮タイプ","頭皮の色","髪の太さ","コシ","クセ","つむじ","つむじの位置","毛量","ツヤ","ダメージ",
+  "顔型","骨格","額","生え際","悩み","生活リズム","ストレス","食生活",
+  "みたい占い","一番の気がかり","気がかり詳細",
+  "理想イメージ","カラー傾向","施術者メモ",
+  "星座","元素","数秘","干支","十二時辰","髪の神様",
+  "当てはまり度","人生の転機","頑張った時期","恋愛・家庭","学び・大切なこと","人生記録日時"];
+
+function flattenRecord(r) {
+  const a = r.answers || {}, res = r.result || {}, o = r.lifeStory || {};
+  return [r.id, r.createdAt, a.name, a.birthdate, a.blood, a.birthtime, a.birthTimeExact, a.birthplace,
+    a.scalpType, a.scalpColor, a.thickness, a.elasticity, a.curl, a.cowlick,
+    Array.isArray(a.cowlickPos) ? a.cowlickPos.join("・") : "", a.volume, a.shine, a.damage,
+    a.faceShape, a.bodyType, a.forehead, a.hairline,
+    Array.isArray(a.concerns) ? a.concerns.join("・") : "", a.rhythm, a.stress, a.diet,
+    Array.isArray(a.fortuneTopics) ? a.fortuneTopics.join("・") : "", a.topWorry, a.worryDetail,
+    a.idealImage, a.colorPref, a.memo,
+    res.zodiac, res.element, res.numerology, res.eto, res.shichenName, res.kamiName,
+    o.fit, o.turningPoint, o.effort, o.loveFamily, o.lesson, o.recordedAt];
+}
+
+function exportCsv() {
+  const list = loadRecords();
+  if (!list.length) { alert("記録がありません"); return; }
+  const esc = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const rows = [CSV_HEADERS.map(esc).join(",")];
+  for (const r of list) rows.push(flattenRecord(r).map(esc).join(","));
+  downloadBlob("﻿" + rows.join("\r\n"), "text/csv", `kamiuranai_records_${today()}.csv`);
+}
+
+/* ══════════════════════════════════════
+   スプレッドシート連携（Google Apps Script）
+   ══════════════════════════════════════ */
+const GAS_KEY = "kamiuranai_gas_url";
+// 公開版に組み込む送信先（スプレッドシート受け口のURL）
+const EMBEDDED_GAS_URL = "https://script.google.com/macros/s/AKfycbw2jDXXfiPbXqVVVz0I_obarv4bXVp7A8cadDEqk2GNL_EX0JFwg8YJsTnHec8eiszG/exec";
+
+function getGasUrl() { return localStorage.getItem(GAS_KEY) || EMBEDDED_GAS_URL; }
+
+function openSettings() {
+  const cur = getGasUrl();
+  const v = prompt(
+    "Googleスプレッドシート連携URL（Apps ScriptのウェブアプリURL）を貼り付けてください。\n空にしてOKすると連携を解除します。\n※設定方法は README.md を見てください",
+    cur
+  );
+  if (v === null) return;
+  localStorage.setItem(GAS_KEY, v.trim());
+  alert(v.trim()
+    ? "連携を設定しました。以後の診断・施術記録は自動でスプレッドシートにも送られます。"
+    : "連携を解除しました。記録はこの端末にのみ保存されます。");
+}
+
+function syncRecord(record) {
+  const url = getGasUrl();
+  if (!url) return;
+  fetch(url, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain" },
+    body: JSON.stringify(record),
+  }).catch(e => console.warn("シート送信に失敗しました（端末には保存済み）", e));
+}
+
+async function syncAll() {
+  const url = getGasUrl();
+  if (!url) { alert("先にトップ画面の「データ連携の設定」でURLを設定してください"); return; }
+  const list = loadRecords();
+  if (!list.length) { alert("記録がありません"); return; }
+  for (const r of list) {
+    syncRecord(r);
+    await new Promise(res => setTimeout(res, 300));
+  }
+  alert(`${list.length}件をスプレッドシートへ送信しました`);
+}
+
+/* ══════════════════════════════════════
+   傾向分析
+   ══════════════════════════════════════ */
+function countBy(items) {
+  const map = {};
+  for (const i of items) { if (i) map[i] = (map[i] || 0) + 1; }
+  return Object.entries(map).sort((a, b) => b[1] - a[1]);
+}
+
+function barsHtml(entries, total) {
+  return entries.map(([label, n]) =>
+    `<p>${label}　${n}件</p><div class="bar"><i style="width:${Math.round(n / total * 100)}%"></i></div>`
+  ).join("");
+}
+
+function showStats() {
+  const list = loadRecords();
+  const el = document.getElementById("statsBody");
+  if (!list.length) {
+    el.innerHTML = `<p class="empty">まだ記録がありません。<br>データが貯まるほど、ここに傾向が見えてきます。</p>`;
+    show("stats");
+    return;
+  }
+  const withStory = list.filter(r => r.lifeStory);
+  const fits = countBy(withStory.map(r => r.lifeStory.fit));
+  const fitOk = withStory.filter(r => ["よく当たっている", "半分くらい"].includes(r.lifeStory.fit)).length;
+  const concerns = countBy(list.flatMap(r => Array.isArray(r.answers.concerns) ? r.answers.concerns : []));
+  const kami = countBy(list.map(r => r.result.kamiName));
+  const scalp = countBy(list.map(r => r.answers.scalpType));
+
+  let html = `
+    <div class="stat-card">
+      <h3>記録の状況</h3>
+      <p>診断 ${list.length}件 ／ 人生の記録あり ${withStory.length}件（未記録 ${list.length - withStory.length}件）</p>
+      ${withStory.length ? `<p>鑑定の当てはまり率：<strong>${Math.round(fitOk / withStory.length * 100)}%</strong></p>` : `<p>人生の記録が貯まると、当てはまり率がここに出ます。</p>`}
+    </div>`;
+  if (fits.length) {
+    html += `<div class="stat-card"><h3>当てはまり度の内訳</h3>${barsHtml(fits, withStory.length)}</div>`;
+  }
+  const worries = countBy(list.map(r => r.answers.topWorry).filter(w => w && w !== "特にない"));
+  if (worries.length) {
+    html += `<div class="stat-card"><h3>いちばんの気がかりの傾向（人生の悩みデータ）</h3>${barsHtml(worries, list.length)}</div>`;
+  }
+  const topics = countBy(list.flatMap(r => Array.isArray(r.answers.fortuneTopics) ? r.answers.fortuneTopics : []));
+  if (topics.length) {
+    html += `<div class="stat-card"><h3>占いでみたいことの傾向</h3>${barsHtml(topics.slice(0, 6), list.length)}</div>`;
+  }
+  if (concerns.length) {
+    html += `<div class="stat-card"><h3>髪の悩みの傾向</h3>${barsHtml(concerns.slice(0, 6), list.length)}</div>`;
+  }
+  html += `<div class="stat-card"><h3>髪の神様の分布</h3>${barsHtml(kami, list.length)}</div>`;
+  if (scalp.length) {
+    html += `<div class="stat-card"><h3>頭皮タイプの分布</h3>${barsHtml(scalp, list.length)}</div>`;
+  }
+  html += `<p style="font-size:0.8rem; color:#8a8577; text-align:center; margin-top:1.5rem;">CSVやJSONを書き出してClaudeに渡すと、<br>このデータをもとに診断ルールを改善できます。</p>`;
+  el.innerHTML = html;
+  show("stats");
+}
+</script>
+</body>
+</html>
