@@ -161,6 +161,21 @@ textarea { min-height: 4.5rem; resize: vertical; }
 /* ---------- 相性占い ---------- */
 .aishou-form { background: var(--white); border-radius: 6px; padding: 1.6rem; margin-bottom: 1.4rem; }
 .aishou-divider { text-align: center; color: var(--gold); letter-spacing: 0.3em; font-size: 0.8rem; margin: 1rem 0; }
+
+/* ---------- 当てはまり度ワンタップ ---------- */
+.fit-buttons { display: flex; gap: 0.6rem; margin-top: 1rem; }
+.fit-btn {
+  flex: 1; padding: 1rem 0.4rem; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(176,141,87,0.5); background: #fff;
+  font-family: 'Noto Serif JP', serif; font-size: 0.92rem; color: var(--ink);
+}
+.fit-btn:active { background: var(--sea); color: #fff; }
+.bonus-box {
+  margin-top: 1.2rem; padding: 1.2rem 1.4rem; border-radius: 6px;
+  background: linear-gradient(160deg, #2f5d5a 0%, #1e403e 100%); color: #fff;
+}
+.bonus-box .b-label { font-size: 0.72rem; letter-spacing: 0.25em; color: #e8d9bd; margin-bottom: 0.5rem; }
+.detail-toggle { margin-top: 1.2rem; font-size: 0.85rem; color: var(--sea); text-decoration: underline; cursor: pointer; background: none; border: none; font-family: inherit; }
 </style>
 </head>
 <body>
@@ -172,11 +187,13 @@ textarea { min-height: 4.5rem; resize: vertical; }
     <img src="images/hero-torii-mobile.jpg" alt="神と髪 — 髪占い" class="hero-mobile">
     <button class="overlay-btn ob-fill" style="left:37.2%; top:66.4%; width:25.6%; height:5.8%;" onclick="startDiagnosis()">占いをはじめる</button>
     <button class="overlay-btn ob-ghost" style="left:37.2%; top:73.7%; width:25.6%; height:6.1%;" onclick="showAishou()">ふたりの相性を占う</button>
+    <button class="overlay-btn ob-ghost" style="left:37.2%; top:80.9%; width:25.6%; height:6.1%;" onclick="showMonthly()">今月の開運を見る</button>
   </div>
   <div class="start-body">
     <div class="mobile-actions">
       <button class="btn" onclick="startDiagnosis()">占いをはじめる</button>
       <button class="btn ghost" onclick="showAishou()">ふたりの相性を占う</button>
+      <button class="btn ghost" onclick="showMonthly()">今月の開運を見る</button>
     </div>
     <!-- 「これまでの記録を見る」「傾向を見る」は一般公開しない（Claude Codeから showRecords()/showStats() を直接呼んだときだけ確認用） -->
     <p style="font-size:0.72rem; color:#a8a396; margin:1.4rem 0 0;">※回答は、占いをより良くするための研究データとして記録されます</p>
@@ -247,6 +264,22 @@ textarea { min-height: 4.5rem; resize: vertical; }
     <button class="btn" onclick="runAishou()">相性を占う</button>
   </div>
   <div id="aishouResult"></div>
+</section>
+
+<!-- ═══════ 今月の開運 ═══════ -->
+<section id="monthly" class="screen">
+  <div class="top-nav">
+    <a onclick="goHome()">← トップへ</a>
+  </div>
+  <p class="eyebrow">MONTHLY</p>
+  <h2 style="text-align:center; margin-bottom:0.6rem; color:var(--sea);">今月の開運</h2>
+  <p style="font-size:0.85rem; color:#6b665d; text-align:center; margin-bottom:1.6rem;">九星の月の巡りから、いまのあなたの風向きを読みます。<br>毎月、節入りの日に内容が変わります。</p>
+  <div class="aishou-form">
+    <div class="field"><label class="name">生年月日</label><input type="date" id="m_birth"></div>
+    <p id="monthlyError" style="color:#b05757; font-size:0.88rem; text-align:center;"></p>
+    <button class="btn" onclick="runMonthly()">今月の運気を見る</button>
+  </div>
+  <div id="monthlyResult"></div>
 </section>
 
 <script>
@@ -812,6 +845,129 @@ function renderAishou(n1, n2, d) {
   return html;
 }
 
+/* ══════ 今月の開運（九星の月運・アプリ内で計算） ══════ */
+const STAR_INFO = {
+  1: { name: "一白水星", element: "水", color: "白・黒" },
+  2: { name: "二黒土星", element: "土", color: "黄・茶" },
+  3: { name: "三碧木星", element: "木", color: "青" },
+  4: { name: "四緑木星", element: "木", color: "緑" },
+  5: { name: "五黄土星", element: "土", color: "黄金" },
+  6: { name: "六白金星", element: "金", color: "白・銀" },
+  7: { name: "七赤金星", element: "金", color: "赤・金" },
+  8: { name: "八白土星", element: "土", color: "白・黄" },
+  9: { name: "九紫火星", element: "火", color: "紫・赤" },
+};
+const MONTH_THEME = {
+  1: "水面下で物事が動く月。焦らず種を蒔き、情報と人脈を静かに仕込むのが吉です。",
+  2: "コツコツが報われる月。基礎固め・整理整頓・土台づくりに最適です。",
+  3: "スタートの号砲が鳴る月。新しいこと・発信・スピード勝負に追い風が吹きます。",
+  4: "縁が風に乗って運ばれる月。人付き合い・商談・恋の進展に好機です。",
+  5: "動より静の月。大きな決断は急がず、足元を固めるのが勝ちです。",
+  6: "実力が評価される月。勝負どころでは堂々と。上質なものへの投資も吉。",
+  7: "実りと楽しみの月。人と集い、よく笑い、よく味わうほど運が巡ります。",
+  8: "変化と仕切り直しの月。模様替えや、続けるもの・手放すものの整理に吉。",
+  9: "光が当たる月。隠れていた努力が表に出ます。美容・学び・自己表現に最高の時。",
+};
+const RELATION_TEXT = {
+  "生気": "今月はあなたに向かって追い風が吹いています。迷ったら「進む」を選んで大丈夫。挑戦・出会い・新調——すべてに勢いが味方します。",
+  "比和": "今月はあなたが主役の月。周りに合わせるより、自分の望みを先に言葉にしてください。あなたの選択がそのまま流れを作ります。",
+  "退気": "今月は与える月。人のために動いたことが、少し遅れて自分に還ってきます。ただし出しすぎには注意——休息の予定も先に確保を。",
+  "財気": "今月は手応えの月。積み上げてきたことに結果が出やすく、交渉やお願いごとが通りやすい時です。欲しいものは、はっきり口に出して。",
+  "剋気": "今月は整えの月。無理に攻めるより、髪・部屋・予定を整えることが最大の開運です。ゆっくり湯船に浸かり、来月への英気を養って。",
+};
+
+function digitalRoot(n) { while (n > 9) { n = String(n).split("").reduce((a, b) => a + Number(b), 0); } return n; }
+
+function honmeiseiOf(birthdateStr) {
+  const d = new Date(birthdateStr);
+  let y = d.getFullYear();
+  if (d.getMonth() + 1 < 2 || (d.getMonth() + 1 === 2 && d.getDate() < 4)) y -= 1; // 立春前は前年生まれ扱い
+  let s = 11 - digitalRoot(y);
+  if (s > 9) s -= 9;
+  return s;
+}
+
+const SETSU_DAYS = { 1: 6, 2: 4, 3: 6, 4: 5, 5: 6, 6: 6, 7: 7, 8: 7, 9: 8, 10: 8, 11: 7, 12: 7 };
+
+function monthCenterStar(now) {
+  let m = now.getMonth() + 1, y = now.getFullYear();
+  if (now.getDate() < SETSU_DAYS[m]) { m -= 1; if (m === 0) { m = 12; y -= 1; } }
+  let starYear = y;
+  if (m === 1) starYear -= 1; // 1月節は前年の九星年
+  let ys = 11 - digitalRoot(starYear);
+  if (ys > 9) ys -= 9;
+  const febCenter = (ys % 3 === 1) ? 8 : (ys % 3 === 2) ? 5 : 2;
+  const offset = (m >= 2) ? m - 2 : 11;
+  let c = febCenter - offset;
+  while (c < 1) c += 9;
+  return { center: c, setsuMonth: m };
+}
+
+function elementRelation(userEl, monthEl) {
+  if (userEl === monthEl) return "比和";
+  const gen = { "木": "火", "火": "土", "土": "金", "金": "水", "水": "木" };
+  if (gen[monthEl] === userEl) return "生気";
+  if (gen[userEl] === monthEl) return "退気";
+  const over = { "木": "土", "土": "水", "水": "火", "火": "金", "金": "木" };
+  if (over[userEl] === monthEl) return "財気";
+  return "剋気";
+}
+
+function showMonthly() {
+  const list = loadRecords();
+  if (list.length && list[0].answers && list[0].answers.birthdate) {
+    document.getElementById("m_birth").value = list[0].answers.birthdate;
+  }
+  document.getElementById("monthlyResult").innerHTML = "";
+  show("monthly");
+}
+
+function runMonthly() {
+  const b = document.getElementById("m_birth").value;
+  const err = document.getElementById("monthlyError");
+  err.textContent = "";
+  if (!b) { err.textContent = "生年月日を入力してください"; return; }
+  const user = honmeiseiOf(b);
+  const now = new Date();
+  const mc = monthCenterStar(now);
+  const userInfo = STAR_INFO[user];
+  const monthInfo = STAR_INFO[mc.center];
+  const rel = elementRelation(userInfo.element, monthInfo.element);
+  const monthLabel = mc.setsuMonth + "月";
+  const html = `
+    <div class="kami-name" style="min-height:auto; padding:2.4rem 1rem;">
+      <p class="small-label">${monthLabel}の運気 — ${userInfo.name}のあなたへ</p>
+      <h2>「${rel}」の月</h2>
+      <p class="kami-words">あなたの本命星は ${userInfo.name}</p>
+    </div>
+    <div class="result-card"><h3>今月の風向き</h3><p>${RELATION_TEXT[rel]}</p></div>
+    <div class="result-card"><h3>今月の世の中の流れ</h3><p>${monthLabel}は「${monthInfo.name}」の気が満ちる月。${MONTH_THEME[mc.center]}</p></div>
+    <div class="result-card"><h3>今月の開運</h3>
+      <p>ラッキーカラー：${monthInfo.color}</p>
+      <p>おすすめ：今月のラッキーカラーを、ヘアカラー・ヘアアクセ・小物のどれかひとつに取り入れてみてください。</p>
+    </div>
+    ${shareRowHtml(`「神と髪」の今月の開運🔮 私は${userInfo.name}・${rel}の月でした⛩️`)}
+    <p style="text-align:center; font-size:0.78rem; color:#8a8577; margin-top:1rem;">運気は毎月、節入りの日（${SETSU_DAYS[(mc.setsuMonth % 12) + 1]}日ごろ)に切り替わります。また来月、見に来てください。</p>
+    <p style="text-align:center; font-size:0.72rem; color:#a8a396; margin-top:0.3rem;">※この占いは、楽しんでいただくためのものです</p>`;
+  document.getElementById("monthlyResult").innerHTML = html;
+}
+
+/* ══════ 記入のお礼: 干支別の隠し開運アドバイス ══════ */
+const BONUS_TIPS = {
+  "子": "子年のあなたの隠れ開運は「水回りを磨く」こと。洗面台が輝くほど、直感とご縁が冴えます。",
+  "丑": "丑年のあなたの隠れ開運は「朝の10分早起き」。ゆっくり始めた日ほど、良い流れを引き寄せます。",
+  "寅": "寅年のあなたの隠れ開運は「迷ったら即決」。決めた瞬間に運が動き出す星です。",
+  "卯": "卯年のあなたの隠れ開運は「花をひと枝飾る」こと。身近な彩りが、ご縁の呼び水になります。",
+  "辰": "辰年のあなたの隠れ開運は「大きな夢を口に出す」こと。語った夢の分だけ、応援者が現れます。",
+  "巳": "巳年のあなたの隠れ開運は「手放すこと」。財布・バッグの中を軽くするたび、新しい運が入ります。",
+  "午": "午年のあなたの隠れ開運は「午前中の勝負」。大事な連絡や決断は、太陽が高いうちに。",
+  "未": "未年のあなたの隠れ開運は「ふわふわの手触り」。上質なタオルや毛布が、運気の充電器になります。",
+  "申": "申年のあなたの隠れ開運は「遊び心の一手間」。真面目な仕事にこそ、小さな仕掛けを忍ばせて。",
+  "酉": "酉年のあなたの隠れ開運は「身だしなみの仕上げ5分」。整った襟元と髪が、チャンスを連れてきます。",
+  "戌": "戌年のあなたの隠れ開運は「散歩コースを変える」こと。いつもと違う道に、新しい縁が待っています。",
+  "亥": "亥年のあなたの隠れ開運は「一点集中」。あれこれ手を出す月より、ひとつに没頭する月が実ります。",
+};
+
 const SCALP_ADVICE = {
   "乾燥": "洗浄力のやさしいシャンプーとぬるま湯洗いで、頭皮のうるおいを守りましょう。",
   "脂性": "洗いすぎは逆効果。夜1回の丁寧な洗髪と、頭皮クレンジングを週1回が目安です。",
@@ -1164,51 +1320,85 @@ function renderResult(record) {
 }
 
 function renderOutcomeSection(record) {
-  if (record.lifeStory) {
-    const o = record.lifeStory;
+  const o = record.lifeStory;
+  const bonus = record.result && record.result.eto ? (BONUS_TIPS[record.result.eto] || "") : "";
+  const hasDetails = o && (o.turningPoint || o.effort || o.loveFamily || o.lesson || o.detailsDone);
+
+  // 段階3: すべて記入済み → まとめ表示
+  if (o && o.fit && hasDetails) {
     return `<div class="outcome-box">
       <h3>あなたの人生の記録</h3>
-      <p>鑑定の当てはまり：${o.fit || "—"}</p>
+      <p>鑑定の当てはまり：${o.fit}</p>
       ${o.turningPoint ? `<p>人生の転機：${o.turningPoint}</p>` : ""}
       ${o.effort ? `<p>頑張った時期：${o.effort}</p>` : ""}
       ${o.loveFamily ? `<p>恋愛・家庭：${o.loveFamily}</p>` : ""}
       ${o.lesson ? `<p>学び・大切にしていること：${o.lesson}</p>` : ""}
+      ${bonus ? `<div class="bonus-box"><p class="b-label">あなただけの隠し開運</p><p>${bonus}</p></div>` : ""}
     </div>`;
   }
+
+  // 段階2: 当てはまり度は回答済み → お礼の隠し開運 + 任意の詳細記入
+  if (o && o.fit) {
+    return `<div class="outcome-box">
+      <h3>ありがとうございます</h3>
+      <p style="font-size:0.9rem;">「${o.fit}」で記録しました。お礼に、あなただけの隠し開運をひとつ。</p>
+      ${bonus ? `<div class="bonus-box"><p class="b-label">あなただけの隠し開運</p><p>${bonus}</p></div>` : ""}
+      <p style="font-size:0.85rem; color:#6b665d; margin-top:1.4rem;">もしよければ、あなたの人生も少しだけ聞かせてください。歩んでこられた道のりそのものが、この占いを育てる一番の知恵になります。<br><span style="font-size:0.75rem; color:#a8a396;">※ご回答は、占いをより良くするための研究データとして記録されます</span></p>
+      <div class="field"><label class="name">これまでの人生で、一番の転機はどんなことでしたか？</label>
+        <textarea id="o_turning" placeholder="例：30歳での転職、結婚、引っ越しなど"></textarea></div>
+      <div class="field"><label class="name">一番頑張った時期・乗り越えたことは？</label>
+        <textarea id="o_effort" placeholder="例：子育てと仕事の両立の時期"></textarea></div>
+      <div class="field"><label class="name">恋愛や家族のこれまでを、話せる範囲で</label>
+        <textarea id="o_love" placeholder="任意です"></textarea></div>
+      <div class="field"><label class="name">人生で学んだこと・大切にしていることは？</label>
+        <textarea id="o_lesson" placeholder="例：無理をしないこと"></textarea></div>
+      <button class="btn small" onclick="saveLifeStoryDetails(${record.id})">記録する</button>
+    </div>`;
+  }
+
+  // 段階1: まずワンタップだけ
   return `<div class="outcome-box">
-    <h3>あなたの人生を、少しだけ聞かせてください</h3>
-    <p style="font-size:0.85rem; color:#6b665d; margin-bottom:1.2rem;">鑑定はいかがでしたか。あなたが歩んでこられた道のりそのものが、この占いを育てる一番の知恵になります。話せる範囲で大丈夫です。<br><span style="font-size:0.75rem; color:#a8a396;">※ご回答は、占いをより良くするための研究データとして記録されます</span></p>
-    <div class="field"><label class="name">この鑑定は、当てはまっていましたか？</label><div class="choices">
-      ${["よく当たっている","半分くらい","あまり"].map(o => `<label><input type="radio" name="o_fit" value="${o}"><span>${o}</span></label>`).join("")}
-    </div></div>
-    <div class="field"><label class="name">これまでの人生で、一番の転機はどんなことでしたか？</label>
-      <textarea id="o_turning" placeholder="例：30歳での転職、結婚、引っ越しなど"></textarea></div>
-    <div class="field"><label class="name">一番頑張った時期・乗り越えたことは？</label>
-      <textarea id="o_effort" placeholder="例：子育てと仕事の両立の時期"></textarea></div>
-    <div class="field"><label class="name">恋愛や家族のこれまでを、話せる範囲で</label>
-      <textarea id="o_love" placeholder="任意です"></textarea></div>
-    <div class="field"><label class="name">人生で学んだこと・大切にしていることは？</label>
-      <textarea id="o_lesson" placeholder="例：無理をしないこと"></textarea></div>
-    <button class="btn small" onclick="saveLifeStory(${record.id})">記録する</button>
+    <h3>この鑑定、当たっていましたか？</h3>
+    <p style="font-size:0.82rem; color:#6b665d;">ワンタップで教えてください。お礼に、あなただけの<strong>隠し開運</strong>をお見せします。</p>
+    <div class="fit-buttons">
+      ${["よく当たっている", "半分くらい", "あまり"].map(v => `<button class="fit-btn" onclick="saveFit(${record.id}, '${v}')">${v}</button>`).join("")}
+    </div>
+    <p style="font-size:0.72rem; color:#a8a396; margin-top:0.8rem;">※ご回答は、占いをより良くするための研究データとして記録されます</p>
   </div>`;
 }
 
-function saveLifeStory(id) {
+function saveFit(id, fitValue) {
   const list = loadRecords();
   const rec = list.find(r => r.id === id);
   if (!rec) return;
-  const fit = document.querySelector('input[name="o_fit"]:checked');
-  rec.lifeStory = {
-    fit: fit ? fit.value : "",
+  rec.lifeStory = Object.assign(rec.lifeStory || {}, {
+    fit: fitValue,
+    recordedAt: new Date().toISOString(),
+  });
+  localStorage.setItem(STORE_KEY, JSON.stringify(list));
+  syncRecord(rec);
+  renderResult(rec);
+  const box = document.querySelector(".outcome-box");
+  if (box) box.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function saveLifeStoryDetails(id) {
+  const list = loadRecords();
+  const rec = list.find(r => r.id === id);
+  if (!rec) return;
+  rec.lifeStory = Object.assign(rec.lifeStory || {}, {
     turningPoint: document.getElementById("o_turning").value.trim(),
     effort: document.getElementById("o_effort").value.trim(),
     loveFamily: document.getElementById("o_love").value.trim(),
     lesson: document.getElementById("o_lesson").value.trim(),
+    detailsDone: true,
     recordedAt: new Date().toISOString(),
-  };
+  });
   localStorage.setItem(STORE_KEY, JSON.stringify(list));
   syncRecord(rec);
   renderResult(rec);
+  const box = document.querySelector(".outcome-box");
+  if (box) box.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 /* ══════════════════════════════════════
