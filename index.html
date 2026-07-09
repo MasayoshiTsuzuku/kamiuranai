@@ -331,6 +331,7 @@ const STEPS = [
     title: "いまの悩みと、日々の暮らしについて",
     fields: [
       { key: "concerns", type: "multi", label: "現在の髪の悩み（複数可）", options: ["抜け毛", "パサつき", "うねり", "白髪", "ボリューム不足", "広がり", "頭皮のかゆみ", "特になし"] },
+      { key: "grayHairSpots", type: "multi", label: "白髪が生えている場所（白髪がある方のみ・複数可）", options: ["こめかみ", "前髪・生え際", "頭頂部", "もみあげ", "白髪はない"] },
       { key: "rhythm", type: "choice", label: "生活リズム", options: ["朝型", "夜型", "不規則"] },
       { key: "stress", type: "choice", label: "ストレス度合い", options: ["低い", "普通", "高い"] },
       { key: "diet", type: "choice", label: "食生活の傾向", options: ["バランス良い", "外食が多い", "偏りがち", "小食"] },
@@ -952,6 +953,14 @@ function runMonthly() {
   document.getElementById("monthlyResult").innerHTML = html;
 }
 
+/* ══════ 白髪の場所 × 経絡の読み解き ══════ */
+const GRAY_SPOT_READINGS = {
+  "こめかみ": "こめかみは「肝・胆の経絡」が通る道。ここに白髪が出るのは、考えごとや気疲れ、目の使いすぎで肝の巡りが滞りやすくなっているサインとされます。頑張り屋のあなたへ——湯船と深呼吸、「怒りは寝かせて翌朝に」が巡りを取り戻す鍵です。",
+  "前髪・生え際": "額の生え際は「胃の経絡」の通り道。ここに白髪が出る方は、胃腸の疲れや食の乱れが巡りを滞らせがちとされます。よく噛むこと、温かい朝ごはんが、髪にも運にも一番の栄養になります。",
+  "頭頂部": "頭のてっぺんは、全身の陽の気が集まる「百会」のツボがある場所。ここに白髪が出るのは、冷えや睡眠不足で気血が上まで届きにくくなっているサインとされます。足首を温め、湯船で芯まで温まると、頭頂まで巡りが戻ります。",
+  "もみあげ": "耳まわり・もみあげは「腎・三焦の経絡」の領域。ここに白髪が出るのは、冷えの積み重ねやホルモンバランスの揺らぎのサインとされます。腎は生命力の源——夜更かしを減らし、黒ごま・黒豆・海藻など黒い食べ物が味方になります。",
+};
+
 /* ══════ 記入のお礼: 干支別の隠し開運アドバイス ══════ */
 const BONUS_TIPS = {
   "子": "子年のあなたの隠れ開運は「水回りを磨く」こと。洗面台が輝くほど、直感とご縁が冴えます。",
@@ -1311,6 +1320,15 @@ function renderResult(record) {
       <p>「${r.concerns.join("・")}」——悩みは、髪があなたに送っているサインです。整えるたびに、少しずつ本来の自分へ近づいていきます。</p>
     </div>`;
   }
+  const graySpots = (a.grayHairSpots || []).filter(s => GRAY_SPOT_READINGS[s]);
+  if (graySpots.length) {
+    html += `
+    <div class="result-card">
+      <h3>白髪からのメッセージ — 経絡の読み解き</h3>
+      ${graySpots.map(s => `<p><strong>${s}</strong>：${GRAY_SPOT_READINGS[s]}</p>`).join("")}
+      <p style="font-size:0.78rem; color:#8a8577;">東洋の知恵では、髪は「血の余り」——白髪の出る場所は、からだの巡りからのお便りとされています。</p>
+    </div>`;
+  }
   html += renderOutcomeSection(record);
   html += shareRowHtml(`「神と髪」で占ったら、私の髪の神様は『${r.kamiName}』でした⛩️`);
   html += `<p style="text-align:center; font-size:0.8rem; color:#8a8577; margin-top:1rem;">${a.name} さま ／ ${dateStr}</p>`;
@@ -1324,7 +1342,7 @@ function renderOutcomeSection(record) {
   const bonus = record.result && record.result.eto ? (BONUS_TIPS[record.result.eto] || "") : "";
   const hasDetails = o && (o.turningPoint || o.effort || o.loveFamily || o.lesson || o.detailsDone);
 
-  // 段階3: すべて記入済み → まとめ表示
+  // 段階3: アンケート記入済み → お礼に秘密の開運メッセージ
   if (o && o.fit && hasDetails) {
     return `<div class="outcome-box">
       <h3>あなたの人生の記録</h3>
@@ -1333,17 +1351,16 @@ function renderOutcomeSection(record) {
       ${o.effort ? `<p>頑張った時期：${o.effort}</p>` : ""}
       ${o.loveFamily ? `<p>恋愛・家庭：${o.loveFamily}</p>` : ""}
       ${o.lesson ? `<p>学び・大切にしていること：${o.lesson}</p>` : ""}
-      ${bonus ? `<div class="bonus-box"><p class="b-label">あなただけの隠し開運</p><p>${bonus}</p></div>` : ""}
+      ${bonus ? `<div class="bonus-box"><p class="b-label">ご回答のお礼 — あなただけの秘密の開運メッセージ</p><p>${bonus}</p></div>` : ""}
     </div>`;
   }
 
-  // 段階2: 当てはまり度は回答済み → お礼の隠し開運 + 任意の詳細記入
+  // 段階2: 当てはまり度は回答済み → アンケート記入のお願い（開運メッセージはまだ渡さない）
   if (o && o.fit) {
     return `<div class="outcome-box">
       <h3>ありがとうございます</h3>
-      <p style="font-size:0.9rem;">「${o.fit}」で記録しました。お礼に、あなただけの隠し開運をひとつ。</p>
-      ${bonus ? `<div class="bonus-box"><p class="b-label">あなただけの隠し開運</p><p>${bonus}</p></div>` : ""}
-      <p style="font-size:0.85rem; color:#6b665d; margin-top:1.4rem;">もしよければ、あなたの人生も少しだけ聞かせてください。歩んでこられた道のりそのものが、この占いを育てる一番の知恵になります。<br><span style="font-size:0.75rem; color:#a8a396;">※ご回答は、占いをより良くするための研究データとして記録されます</span></p>
+      <p style="font-size:0.9rem;">「${o.fit}」で記録しました。</p>
+      <p style="font-size:0.85rem; color:#6b665d; margin-top:1.4rem;">もしよければ、あなたの人生も少しだけ聞かせてください。歩んでこられた道のりそのものが、この占いを育てる一番の知恵になります。<br><strong>ご回答いただいた方に、おまけの「秘密の開運メッセージ」をお渡しします。</strong><br><span style="font-size:0.75rem; color:#a8a396;">※ご回答は、占いをより良くするための研究データとして記録されます</span></p>
       <div class="field"><label class="name">これまでの人生で、一番の転機はどんなことでしたか？</label>
         <textarea id="o_turning" placeholder="例：30歳での転職、結婚、引っ越しなど"></textarea></div>
       <div class="field"><label class="name">一番頑張った時期・乗り越えたことは？</label>
@@ -1359,7 +1376,7 @@ function renderOutcomeSection(record) {
   // 段階1: まずワンタップだけ
   return `<div class="outcome-box">
     <h3>この鑑定、当たっていましたか？</h3>
-    <p style="font-size:0.82rem; color:#6b665d;">ワンタップで教えてください。お礼に、あなただけの<strong>隠し開運</strong>をお見せします。</p>
+    <p style="font-size:0.82rem; color:#6b665d;">ワンタップで教えてください。<br>さらに、人生の転機などのアンケートにご回答いただいた方には、おまけの<strong>秘密の開運メッセージ</strong>をお渡しします。</p>
     <div class="fit-buttons">
       ${["よく当たっている", "半分くらい", "あまり"].map(v => `<button class="fit-btn" onclick="saveFit(${record.id}, '${v}')">${v}</button>`).join("")}
     </div>
@@ -1386,11 +1403,17 @@ function saveLifeStoryDetails(id) {
   const list = loadRecords();
   const rec = list.find(r => r.id === id);
   if (!rec) return;
-  rec.lifeStory = Object.assign(rec.lifeStory || {}, {
+  const details = {
     turningPoint: document.getElementById("o_turning").value.trim(),
     effort: document.getElementById("o_effort").value.trim(),
     loveFamily: document.getElementById("o_love").value.trim(),
     lesson: document.getElementById("o_lesson").value.trim(),
+  };
+  if (!details.turningPoint && !details.effort && !details.loveFamily && !details.lesson) {
+    alert("どれかひとつだけでもご記入いただけると、秘密の開運メッセージをお渡しできます");
+    return;
+  }
+  rec.lifeStory = Object.assign(rec.lifeStory || {}, details, {
     detailsDone: true,
     recordedAt: new Date().toISOString(),
   });
