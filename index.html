@@ -80,6 +80,10 @@ h1, h2, h3 { font-family: 'Shippori Mincho', serif; }
 .progress-bar { height: 100%; background: var(--gold); border-radius: 2px; width: 0; transition: width 0.3s; }
 .step-label { font-size: 0.75rem; color: var(--gold); letter-spacing: 0.2em; text-align: center; margin-bottom: 1.6rem; }
 .q-title { font-size: 1.25rem; color: var(--sea); margin-bottom: 1.6rem; text-align: center; }
+.quiz-intro { margin-bottom: 2rem; }
+.quiz-intro-q { font-size: 1rem; color: var(--sea); font-weight: 600; text-align: center; line-height: 1.8; margin-bottom: 0.8rem; }
+.quiz-intro-body { font-size: 0.88rem; color: #6b665d; line-height: 1.9; margin-bottom: 0.8rem; }
+.quiz-intro-note { font-size: 0.72rem; color: #a8a396; line-height: 1.7; }
 .field { margin-bottom: 1.6rem; }
 .field > label.name { display: block; font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--ink); font-weight: 600; }
 .choices { display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -104,6 +108,13 @@ textarea { min-height: 4.5rem; resize: vertical; }
 }
 .result-card h3 { color: var(--sea); font-size: 1.05rem; margin-bottom: 0.8rem; letter-spacing: 0.1em; }
 .result-card p { font-size: 0.95rem; margin-bottom: 0.6rem; }
+.yomi-sub { color: var(--gold); font-size: 0.82rem; letter-spacing: 0.12em; margin-bottom: 1.2rem; }
+.yomi-type { color: var(--sea); font-size: 0.95rem; margin: 1.6rem 0 0.5rem; letter-spacing: 0.06em; }
+.yomi-kw { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.7rem; }
+.yomi-kw span { font-size: 0.72rem; color: var(--sea); border: 1px solid rgba(47,93,90,0.4); border-radius: 999px; padding: 0.1rem 0.7rem; }
+.yomi-label { font-size: 0.78rem; color: var(--gold); letter-spacing: 0.15em; margin: 0.8rem 0 0.3rem; }
+.yomi-list { margin: 0 0 0.6rem 1.3rem; font-size: 0.95rem; }
+.yomi-list li { margin-bottom: 0.25rem; }
 .kami-name {
   text-align: center; padding: 2.5rem 1rem; margin-bottom: 1.4rem;
   background: linear-gradient(160deg, #2f5d5a 0%, #1e403e 100%); color: #fff; border-radius: 6px;
@@ -195,6 +206,7 @@ textarea { min-height: 4.5rem; resize: vertical; }
       <button class="btn ghost" onclick="showAishou()">ふたりの相性を占う</button>
       <button class="btn ghost" onclick="showMonthly()">今月の開運を見る</button>
     </div>
+    <p style="margin-top:1.6rem;"><a onclick="showYomimono()" style="font-size:0.88rem; color:var(--sea); text-decoration:underline; cursor:pointer;">📖 髪占いの読み物 — 生え際と頭皮が語ること</a></p>
     <!-- 「これまでの記録を見る」「傾向を見る」は一般公開しない（Claude Codeから showRecords()/showStats() を直接呼んだときだけ確認用） -->
     <p style="font-size:0.72rem; color:#a8a396; margin:1.4rem 0 0;">※回答は、占いをより良くするための研究データとして記録されます</p>
   </div>
@@ -282,6 +294,131 @@ textarea { min-height: 4.5rem; resize: vertical; }
   <div id="monthlyResult"></div>
 </section>
 
+<!-- ═══════ 読み物（髪占いの世界観） ═══════ -->
+<section id="yomimono" class="screen">
+  <div class="top-nav">
+    <a onclick="goHome()">← トップへ</a>
+  </div>
+  <p class="eyebrow">READING</p>
+  <h2 style="text-align:center; margin-bottom:0.6rem; color:var(--sea);">髪占いの読み物</h2>
+  <p style="font-size:0.85rem; color:#6b665d; text-align:center; margin-bottom:2rem;">髪と頭皮は、その人の歩んできた道といまを静かに語ります。<br>髪占いの世界観を、少しだけ深くご紹介します。</p>
+
+  <div class="result-card">
+    <h3>襟足の生え際と性格形成</h3>
+    <p class="yomi-sub">〜人生の土台や安心感が表れる場所〜</p>
+    <p>髪占いでは、襟足の生え際は<strong>「人生の土台」「安心感」「本能」「幼少期に育まれた価値観」</strong>を表す場所と考えます。</p>
+    <p>人は生まれたときから、それぞれ異なる環境で育ちます。愛情をたくさん受けて育った人もいれば、自立を求められた人、周囲の空気を読みながら育った人もいます。そうした幼少期の経験は、考え方や行動パターンとなって積み重なり、その人らしさを形づくっていきます。</p>
+    <p>襟足の生え際には、その<strong>「人生の土台となるエネルギー」</strong>が表れていると髪占いでは捉えています。</p>
+
+    <h4 class="yomi-type">① 襟足が上に上がっている人</h4>
+    <div class="yomi-kw"><span>自立</span><span>行動力</span><span>挑戦</span><span>決断力</span><span>開拓</span></div>
+    <p>幼い頃から「自分で考え、自分で行動する」経験が多く、自立心が育ちやすい傾向があります。誰かに答えを求めるより、自分で道を切り開きながら成長するタイプです。変化を恐れず、新しい環境にも飛び込めるため、挑戦するほど人生が広がっていきます。</p>
+    <p>一方で、人に頼ることが苦手になりやすく、何でも一人で抱え込んでしまうこともあります。</p>
+
+    <h4 class="yomi-type">② 襟足がまっすぐな人</h4>
+    <div class="yomi-kw"><span>安定</span><span>誠実</span><span>継続</span><span>信頼</span></div>
+    <p>安心できる環境を大切にし、物事をコツコツ積み重ねる力があります。約束やルールを守ることを自然に身につけているため、周囲から信頼されることが多いでしょう。派手さよりも、積み重ねによって大きな成果を生み出すタイプです。</p>
+
+    <h4 class="yomi-type">③ 襟足が丸い人</h4>
+    <div class="yomi-kw"><span>優しさ</span><span>共感</span><span>愛情</span><span>包容力</span></div>
+    <p>人の気持ちを感じ取る力が強く、周囲との調和を大切にします。困っている人を見ると放っておけず、人を支えたり癒やしたりする役割を自然と担います。安心できる人間関係の中で、本来の力を発揮しやすいタイプです。</p>
+
+    <h4 class="yomi-type">④ 襟足がギザギザ・不規則な人</h4>
+    <div class="yomi-kw"><span>個性</span><span>創造性</span><span>発想力</span><span>柔軟性</span></div>
+    <p>幼少期からさまざまな価値観や環境に触れながら育ち、自分なりの考え方を身につけてきた傾向があります。型にはまらない発想ができ、新しいアイデアや独自の世界観を生み出す力があります。変化にも柔軟に対応できるため、多様な環境で才能を発揮します。</p>
+
+    <h4 class="yomi-type">⑤ 襟足が下まで深く生えている人</h4>
+    <div class="yomi-kw"><span>忍耐力</span><span>継続力</span><span>粘り強さ</span><span>安定感</span></div>
+    <p>簡単にはあきらめず、一歩ずつ積み重ねることが得意です。時間がかかることでも最後までやり抜く力があり、周囲から「頼れる人」と思われることが多いでしょう。人生経験を重ねるほど、その強さが大きな魅力になります。</p>
+
+    <h4 class="yomi-type">髪占いでの考え方</h4>
+    <p>襟足は、自分では見えにくい場所ですが、人生において最も大切な<strong>「土台」</strong>を象徴する場所です。木が大きく育つためには、見えない根がしっかり張っていることが大切なように、人も幼少期に育まれた価値観や経験が人生の基盤となります。</p>
+    <p>髪占いでは、襟足の生え際から、その人がどのような安心感を求め、どのような力を土台として人生を歩んでいるのかを読み解いていきます。</p>
+    <p>そして、どの形にも優劣はありません。大切なのは、自分の土台を知り、その強みを活かして生きることです。</p>
+  </div>
+
+  <div class="result-card">
+    <h3>前髪の生え際と性格形成</h3>
+    <p class="yomi-sub">〜未来への向き合い方と思考のクセが表れる場所〜</p>
+    <p>髪占いでは、前髪の生え際は<strong>「思考」「第一印象」「未来への向き合い方」</strong>を表す場所と考えます。</p>
+    <p>人は成長する中で、さまざまな経験を積み重ねます。褒められた経験、失敗した経験、人との関わり、家庭環境や学校生活。その積み重ねによって、「物事をどう考えるか」「人とどう接するか」「未来へどう進むか」という思考のクセが少しずつ形づくられていきます。</p>
+    <p>髪占いでは、その思考や行動の傾向が、前髪の生え際や生え癖に表れていると捉えます。</p>
+
+    <h4 class="yomi-type">① 前髪が真ん中で分かれやすい人</h4>
+    <div class="yomi-kw"><span>バランス</span><span>客観性</span><span>調和</span><span>中立</span></div>
+    <p>幼い頃から周囲の空気を読み、人との関係を大切にしながら育つ傾向があります。一つの考えに偏ることなく、多くの視点から物事を考えられるため、人と人をつなぐ役割を担うことが多いでしょう。相手の立場を理解する力があり、相談役として信頼されやすいタイプです。</p>
+
+    <h4 class="yomi-type">② 前髪が右で分かれやすい人</h4>
+    <div class="yomi-kw"><span>責任感</span><span>現実的</span><span>計画性</span><span>安定</span></div>
+    <p>幼い頃から「ちゃんとしよう」「期待に応えよう」という気持ちが育ちやすい傾向があります。物事を順序立てて考えることが得意で、計画を立てながら着実に進めるタイプです。責任感が強く、周囲から頼られることも多いでしょう。</p>
+
+    <h4 class="yomi-type">③ 前髪が左で分かれやすい人</h4>
+    <div class="yomi-kw"><span>感性</span><span>共感</span><span>優しさ</span><span>想像力</span></div>
+    <p>人の気持ちを敏感に感じ取り、自分の感覚を大切にしながら成長してきた傾向があります。相手を思いやる気持ちが強く、人の心に寄り添えるため、癒やし役や支える立場で力を発揮します。感性を活かした仕事や表現活動とも相性が良いタイプです。</p>
+
+    <h4 class="yomi-type">④ 前髪がパックリ割れやすい人</h4>
+    <div class="yomi-kw"><span>葛藤</span><span>成長</span><span>柔軟性</span><span>深い理解</span></div>
+    <p>幼少期から異なる価値観や環境の中で過ごした経験が、思考の柔軟さにつながっている傾向があります。迷いや葛藤を経験しながらも、その一つひとつを糧にして成長していくタイプです。人生経験を重ねるほど、人への理解が深まり、包容力が増していきます。</p>
+
+    <h4 class="yomi-type">⑤ 前髪が立ち上がりやすい人</h4>
+    <div class="yomi-kw"><span>行動力</span><span>好奇心</span><span>挑戦</span><span>自由</span></div>
+    <p>幼い頃から新しいことへの興味が強く、「まずやってみよう」という気持ちを持ちやすい傾向があります。失敗を恐れるよりも経験を重ねることで成長し、自分らしい道を切り開いていくタイプです。自由な発想で新しい価値を生み出す力を持っています。</p>
+
+    <h4 class="yomi-type">髪占いでの考え方</h4>
+    <p>前髪は、その人が未来にどう向き合い、どのように考え、行動するのかを映し出す場所です。過去の経験から生まれた思考のクセや価値観は、未来の選択にも影響を与えます。</p>
+    <p>髪占いでは、前髪の生え際を通して、その人らしい考え方や行動パターンを読み解き、自分の強みや可能性に気づくきっかけにしていきます。</p>
+    <p>そして、どの生え癖にも良い・悪いはありません。大切なのは、自分の思考のクセを知り、それを強みに変えていくことです。</p>
+  </div>
+
+  <div class="result-card">
+    <h3>頭皮の色と健康状態の目安</h3>
+    <p class="yomi-sub">〜頭皮は、いまのあなたを映す鏡〜</p>
+    <p>頭皮の色は、血行や皮脂の状態、紫外線、生活習慣などさまざまな要因によって変化します。色だけで健康状態を判断することはできませんが、頭皮環境を知る一つの目安になります。</p>
+
+    <h4 class="yomi-type">① 青白い頭皮（理想的）</h4>
+    <p class="yomi-label">特徴</p>
+    <ul class="yomi-list"><li>白に少し青みがある</li><li>透明感がある</li><li>毛穴がはっきり見える</li></ul>
+    <p class="yomi-label">考えられる状態</p>
+    <ul class="yomi-list"><li>血流と皮脂のバランスが比較的良い</li><li>頭皮環境が整っている</li><li>健康な髪が育ちやすい状態</li></ul>
+
+    <h4 class="yomi-type">② 赤い頭皮</h4>
+    <p class="yomi-label">特徴</p>
+    <ul class="yomi-list"><li>全体または部分的に赤みがある</li></ul>
+    <p class="yomi-label">考えられる状態</p>
+    <ul class="yomi-list"><li>炎症</li><li>紫外線によるダメージ</li><li>シャンプーや整髪料などの刺激</li><li>掻きすぎ</li><li>ストレスによる影響</li></ul>
+    <p class="yomi-label">おすすめのケア</p>
+    <ul class="yomi-list"><li>頭皮への刺激を減らす</li><li>紫外線対策を行う</li><li>シャンプーを見直す</li><li>赤みやかゆみが続く場合は皮膚科を受診する</li></ul>
+
+    <h4 class="yomi-type">③ 黄色い頭皮</h4>
+    <p class="yomi-label">特徴</p>
+    <ul class="yomi-list"><li>黄色っぽく見える</li></ul>
+    <p class="yomi-label">考えられる状態</p>
+    <ul class="yomi-list"><li>皮脂の酸化</li><li>毛穴の汚れ</li><li>洗浄不足</li><li>食生活の乱れ</li></ul>
+    <p class="yomi-label">おすすめのケア</p>
+    <ul class="yomi-list"><li>正しいシャンプー方法を心がける</li><li>野菜や果物など抗酸化作用のある食品を取り入れる</li><li>十分な睡眠を確保する</li></ul>
+
+    <h4 class="yomi-type">④ 茶色い頭皮</h4>
+    <p class="yomi-label">特徴</p>
+    <ul class="yomi-list"><li>茶色やくすんだ色に見える</li></ul>
+    <p class="yomi-label">考えられる状態</p>
+    <ul class="yomi-list"><li>紫外線ダメージ</li><li>色素沈着</li><li>慢性的な血行不良</li><li>加齢による変化</li></ul>
+    <p class="yomi-label">おすすめのケア</p>
+    <ul class="yomi-list"><li>帽子や日傘などで紫外線対策を行う</li><li>頭皮マッサージで血行を促す</li><li>睡眠や食生活を整える</li><li>保湿ケアを取り入れる</li></ul>
+
+    <h4 class="yomi-type">健康な頭皮の目安</h4>
+    <p>健康な頭皮は、一般的に次のような状態とされています。</p>
+    <ul class="yomi-list"><li>青白く透明感がある</li><li>適度な潤いがある</li><li>毛穴が詰まっていない</li><li>赤みや炎症がない</li><li>ベタつきや乾燥が少ない</li><li>抜け毛やフケが過度にない</li></ul>
+    <p>頭皮の色は日々の生活習慣や体調の影響を受けるため、継続的に観察することで頭皮環境の変化に気づきやすくなります。赤みや痛み、強いかゆみなどの症状が続く場合は、自己判断せず皮膚科などの専門医へ相談することをおすすめします。</p>
+  </div>
+
+  <p style="font-size:0.75rem; color:#a8a396; line-height:1.7; margin-top:1.6rem;">※本内容は「髪占い」における象徴的な解釈であり、医学的・心理学的に性格との因果関係が証明されているものではありません。髪の特徴を通して自分らしさや可能性を見つめ直すための一つの考え方としてお楽しみください。</p>
+
+  <div class="btn-row">
+    <button class="btn ghost" onclick="goHome()">トップへ</button>
+    <button class="btn" onclick="startDiagnosis()">占いをはじめる</button>
+  </div>
+</section>
+
 <script>
 /* ══════════════════════════════════════
    質問定義
@@ -303,6 +440,9 @@ const STEPS = [
   {
     label: "頭皮・髪質",
     title: "髪と頭皮のことを教えてください",
+    intro: `<p class="quiz-intro-q">何年も鏡で見てきた自分の髪や頭皮を、大切に観察したことはありますか？</p>
+      <p class="quiz-intro-body">見ているのに見てこなかった髪の情報から、運気を切り開くきっかけを探していきましょう。</p>
+      <p class="quiz-intro-note">※髪占いは象徴的な解釈による占いです。医学的な診断ではなく、自分らしさを見つめ直すきっかけとしてお楽しみください。</p>`,
     fields: [
       { key: "scalpType", type: "choice", label: "頭皮のタイプ", options: ["乾燥", "脂性", "普通", "混合"] },
       { key: "scalpColor", type: "choice", label: "頭皮の色", options: ["健康的なピンク", "白", "黄", "赤み"] },
@@ -789,6 +929,7 @@ function copyShare(text) {
 
 /* ══════ 相性占い ══════ */
 function showAishou() { show("aishou"); }
+function showYomimono() { show("yomimono"); }
 
 async function runAishou() {
   const n1 = document.getElementById("s1_name").value.trim() || "おひとりめ";
@@ -1155,6 +1296,7 @@ function renderStep() {
   document.getElementById("nextBtn").textContent = currentStep === STEPS.length - 1 ? "結果を見る" : "つぎへ";
 
   let html = `<h2 class="q-title">${step.title}</h2>`;
+  if (step.intro) html += `<div class="quiz-intro">${step.intro}</div>`;
   for (const f of step.fields) {
     html += `<div class="field"><label class="name">${f.label}</label>`;
     const saved = answers[f.key];
