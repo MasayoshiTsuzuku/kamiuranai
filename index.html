@@ -11,7 +11,7 @@
 <meta property="og:url" content="https://masayoshitsuzuku.github.io/kamiuranai/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Shippori+Mincho:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Shippori+Mincho:wght@400;600&family=Zen+Old+Mincho:wght@400;600;700&family=Yuji+Syuku&display=swap" rel="stylesheet">
 <style>
 :root {
   --ink: #2b2926;
@@ -19,6 +19,8 @@
   --sea: #2f5d5a;
   --gold: #b08d57;
   --white: #fffdf9;
+  /* 占いらしい佇まいの書体（トップと幕間だけに使う） */
+  --mystic: 'Yuji Syuku', 'Zen Old Mincho', serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -84,6 +86,101 @@ h1, h2, h3 { font-family: 'Shippori Mincho', serif; }
 .quiz-intro-q { font-size: 1rem; color: var(--sea); font-weight: 600; text-align: center; line-height: 1.8; margin-bottom: 0.8rem; }
 .quiz-intro-body { font-size: 0.88rem; color: #6b665d; line-height: 1.9; margin-bottom: 0.8rem; }
 .quiz-intro-note { font-size: 0.72rem; color: #a8a396; line-height: 1.7; }
+
+/* 文節のかたまり。この単位より内側では改行させない（熟語の途中で切らないため） */
+.nw { display: inline-block; }
+
+/* ── 幕間のページ（銀河を薄く敷いて、文章だけを見せる） ── */
+/* 表示中のときだけ効かせる（.activeを付けないと非表示指定に勝ってしまう） */
+#quiz.interlude.active {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+#quiz.interlude.active::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url('images/cosmos.jpg') center/cover no-repeat;
+  opacity: 0.38;
+  z-index: -2;
+}
+/* 中心をやわらかく抜いて、文字が乗る場所を静かにする */
+#quiz.interlude.active::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(246,241,233,0.82) 0%, rgba(246,241,233,0.54) 45%, rgba(246,241,233,0.18) 100%);
+  z-index: -1;
+}
+#quiz.interlude .progress { position: absolute; top: 1.6rem; left: 5vw; right: 5vw; opacity: 0.5; }
+#quiz.interlude .step-label { display: none; }
+#quiz.interlude .quiz-intro { margin-bottom: 0; }
+#quiz.interlude .quiz-intro-q {
+  font-family: var(--mystic);
+  font-weight: 400;   /* 筆書体は一種類なので、疑似太字にしない */
+  font-size: 1.5rem;
+  line-height: 2.25;
+  letter-spacing: 0.08em;
+  margin-bottom: 2.4rem;
+  text-shadow: 0 1px 14px rgba(246,241,233,0.9);
+  max-width: 24em;
+  margin-left: auto;
+  margin-right: auto;
+  text-wrap: balance;   /* 行末に一文字だけ残さない */
+}
+#quiz.interlude .quiz-intro-body {
+  font-family: var(--mystic);
+  font-size: 1.12rem;
+  line-height: 2.35;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: #4a463f;
+  margin: 0 auto 3rem;
+  max-width: 26em;
+  text-shadow: 0 1px 14px rgba(246,241,233,0.9);
+  text-wrap: balance;
+}
+#quiz.interlude .quiz-intro-note {
+  text-align: center;
+  max-width: 30rem;
+  margin: 0 auto;
+  color: #8d887c;
+  font-size: 0.78rem;
+}
+#quiz.interlude .btn { font-family: var(--mystic); font-size: 1.06rem; letter-spacing: 0.14em; }
+/* 金の細い線を上下に添えて、札のような佇まいにする */
+#quiz.interlude .quiz-intro-q::before,
+#quiz.interlude .quiz-intro-q::after {
+  content: "";
+  display: block;
+  width: 46px;
+  height: 1px;
+  margin: 0 auto;
+  background: var(--gold);
+  opacity: 0.65;
+}
+#quiz.interlude .quiz-intro-q::before { margin-bottom: 2rem; }
+#quiz.interlude .quiz-intro-q::after { margin-top: 2rem; }
+#quiz.interlude .btn-row { margin-top: 2.4rem; }
+@media (max-width: 600px) {
+  #quiz.interlude .quiz-intro-q { font-size: 1.16rem; line-height: 2.1; letter-spacing: 0.05em; }
+  #quiz.interlude .quiz-intro-body { font-size: 0.97rem; line-height: 2.15; letter-spacing: 0.02em; }
+}
+
+/* ── トップ画面も同じ書体で、少し大きく ── */
+#start .overlay-btn, #start .mobile-actions .btn {
+  font-family: var(--mystic);
+  letter-spacing: 0.14em;
+}
+#start .mobile-actions .btn { font-size: 1.1rem; }
+#start .overlay-btn { font-size: clamp(12px, 1.18vw, 22px); }
+#start .start-body a { font-family: var(--mystic); font-size: 0.95rem; letter-spacing: 0.04em; }
+.hae-label { font-size: 0.78rem; color: var(--gold); letter-spacing: 0.1em; margin-top: 1.1rem; margin-bottom: 0.2rem; }
 .field { margin-bottom: 1.6rem; }
 .field > label.name { display: block; font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--ink); font-weight: 600; }
 .choices { display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -168,6 +265,8 @@ textarea { min-height: 4.5rem; resize: vertical; }
 .share-btn { display: inline-block; margin: 0.25rem; padding: 0.6rem 1.3rem; border-radius: 999px; font-size: 0.85rem; text-decoration: none; cursor: pointer; font-family: 'Noto Serif JP', serif; border: 1px solid rgba(43,41,38,0.2); color: var(--ink); background: #fff; }
 .share-btn.line { background: #06C755; color: #fff; border-color: #06C755; }
 .share-btn.x { background: #111; color: #fff; border-color: #111; }
+.share-btn.fb { background: #1877F2; color: #fff; border-color: #1877F2; }
+.share-btn.card { display: block; width: 100%; margin: 0 0 0.7rem; padding: 0.85rem 1.3rem; background: var(--sea); color: #fff; border-color: var(--sea); font-size: 0.92rem; }
 
 /* ---------- 相性占い ---------- */
 .aishou-form { background: var(--white); border-radius: 6px; padding: 1.6rem; margin-bottom: 1.4rem; }
@@ -438,14 +537,19 @@ const STEPS = [
     ]
   },
   {
+    label: "はじめに",
+    interlude: true,
+    intro: `<p class="quiz-intro-q"><span class="nw">何年も鏡で見てきた</span><span class="nw">自分の髪や頭皮を、</span><span class="nw">大切に観察したことは</span><span class="nw">ありますか？</span></p>
+      <p class="quiz-intro-body"><span class="nw">見ているのに見てこなかった</span><span class="nw">髪の情報から、</span><span class="nw">運気を切り開くきっかけを</span><span class="nw">探していきましょう。</span></p>
+      <p class="quiz-intro-note"><span class="nw">※髪占いは象徴的な解釈による占いです。</span><span class="nw">医学的な診断ではなく、</span><span class="nw">自分らしさを見つめ直すきっかけとして</span><span class="nw">お楽しみください。</span></p>`,
+    fields: [],
+  },
+  {
     label: "頭皮・髪質",
     title: "髪と頭皮のことを教えてください",
-    intro: `<p class="quiz-intro-q">何年も鏡で見てきた自分の髪や頭皮を、大切に観察したことはありますか？</p>
-      <p class="quiz-intro-body">見ているのに見てこなかった髪の情報から、運気を切り開くきっかけを探していきましょう。</p>
-      <p class="quiz-intro-note">※髪占いは象徴的な解釈による占いです。医学的な診断ではなく、自分らしさを見つめ直すきっかけとしてお楽しみください。</p>`,
     fields: [
       { key: "scalpType", type: "choice", label: "頭皮のタイプ", options: ["乾燥", "脂性", "普通", "混合"] },
-      { key: "scalpColor", type: "choice", label: "頭皮の色", options: ["健康的なピンク", "白", "黄", "赤み"] },
+      { key: "scalpColor", type: "choice", label: "頭皮の色", options: ["青白い", "白", "黄", "赤み", "茶色"] },
       { key: "thickness", type: "choice", label: "髪の太さ", options: ["細い", "普通", "太い"] },
       { key: "elasticity", type: "choice", label: "髪のコシ・弾力", options: ["強い", "弱い"] },
       { key: "curl", type: "choice", label: "髪のクセ", options: ["直毛", "波状", "強いくせ毛"] },
@@ -464,6 +568,8 @@ const STEPS = [
       { key: "bodyType", type: "choice", label: "骨格タイプ", options: ["ストレート", "ウェーブ", "ナチュラル", "不明"] },
       { key: "forehead", type: "choice", label: "額の広さ", options: ["広い", "普通", "狭い"] },
       { key: "hairline", type: "choice", label: "生え際の形", options: ["M字", "富士額", "標準"] },
+      { key: "bangsHabit", type: "choice", label: "前髪の生え癖（未来への向き合い方が出る場所）", options: ["真ん中で分かれる", "右で分かれる", "左で分かれる", "パックリ割れる", "立ち上がる", "わからない"] },
+      { key: "napeShape", type: "choice", label: "襟足の形（人生の土台が出る場所・後ろから見てもらってください）", options: ["上に上がっている", "まっすぐ", "丸い", "ギザギザ・不規則", "下まで深い", "わからない"] },
     ]
   },
   {
@@ -530,42 +636,42 @@ function getNumerology(dateStr) {
 
 // ══════ 12柱の髪の神様（星座ごと） ══════
 const ZODIAC_KAMI = {
-  "牡羊座": { kami: "暁火の神", img: "images/kami-aries.svg",
+  "牡羊座": { kami: "暁火の髪神", img: "images/kami-aries.svg",
     words: "夜明けにいちばん最初の火を灯す神が、あなたの髪に宿っています。",
-    nature: "暁火の神に見守られる人は、思い立ったら誰より早く動き出す開拓者の魂を持っています。考えるより先に体が動く——その勢いが、周りの人を巻き込み、道なき場所に道を作ります。失敗を恐れない心は、何度でも夜明けを迎えられる強さの証です。" },
-  "牡牛座": { kami: "大樹の神", img: "images/kami-taurus.svg",
+    nature: "暁火の髪神に見守られる人は、思い立ったら誰より早く動き出す開拓者の魂を持っています。考えるより先に体が動く——その勢いが、周りの人を巻き込み、道なき場所に道を作ります。失敗を恐れない心は、何度でも夜明けを迎えられる強さの証です。" },
+  "牡牛座": { kami: "大樹の髪神", img: "images/kami-taurus.svg",
     words: "大地に深く根ざす大樹の力が、あなたの髪に宿っています。",
-    nature: "大樹の神に見守られる人は、五感が鋭く、本物を見分ける目を持っています。ゆっくりでも、一度決めたら動かない静かな強さがあり、周りからは「安心できる人」と映っています。心地よさを大切にする感性は、豊かさを引き寄せる根になります。" },
-  "双子座": { kami: "双風の神", img: "images/kami-gemini.svg",
+    nature: "大樹の髪神に見守られる人は、五感が鋭く、本物を見分ける目を持っています。ゆっくりでも、一度決めたら動かない静かな強さがあり、周りからは「安心できる人」と映っています。心地よさを大切にする感性は、豊かさを引き寄せる根になります。" },
+  "双子座": { kami: "双風の髪神", img: "images/kami-gemini.svg",
     words: "ふたつの風が、あなたの髪を軽やかに揺らしています。",
-    nature: "双風の神に見守られる人は、好奇心と言葉の才に恵まれ、どんな相手とも話の糸口を見つけられます。飽きっぽいと言われることがあっても、それは欠点ではなく、多くの世界を見るために生まれた翼。ふたつの視点を同時に持てることが、あなたの知性です。" },
-  "蟹座": { kami: "月潮の神", img: "images/kami-cancer.svg",
+    nature: "双風の髪神に見守られる人は、好奇心と言葉の才に恵まれ、どんな相手とも話の糸口を見つけられます。飽きっぽいと言われることがあっても、それは欠点ではなく、多くの世界を見るために生まれた翼。ふたつの視点を同時に持てることが、あなたの知性です。" },
+  "蟹座": { kami: "月潮の髪神", img: "images/kami-cancer.svg",
     words: "月夜の潮が、あなたの髪にうるおいを運んでいます。",
-    nature: "月潮の神に見守られる人は、月が潮を導くように、身近な人の心の満ち引きを感じ取ります。守ると決めた人へは誰よりも深い愛情を注ぎ、その温かさが「帰りたくなる場所」を作ります。思い出を大切にする心は、絆を育てる才能です。" },
-  "獅子座": { kami: "日輪の神", img: "images/kami-leo.svg",
+    nature: "月潮の髪神に見守られる人は、月が潮を導くように、身近な人の心の満ち引きを感じ取ります。守ると決めた人へは誰よりも深い愛情を注ぎ、その温かさが「帰りたくなる場所」を作ります。思い出を大切にする心は、絆を育てる才能です。" },
+  "獅子座": { kami: "日輪の髪神", img: "images/kami-leo.svg",
     words: "真昼の太陽の光が、あなたの髪を金色に照らしています。",
-    nature: "日輪の神に見守られる人は、「あなたは大丈夫そうだから」と言われて、ひとりで飲み込んだことが何度もあるはずです。明るく見えるのは生まれつきではなく、場の空気を悪くしたくないという気づかいが働いているから。堂々として見える裏で、本当は人の評価をずっと気にしています。その落差を知っている人の前でだけ、あなたは本当の顔を見せられます。" },
-  "乙女座": { kami: "穂波の神", img: "images/kami-virgo.svg",
+    nature: "日輪の髪神に見守られる人は、「あなたは大丈夫そうだから」と言われて、ひとりで飲み込んだことが何度もあるはずです。明るく見えるのは生まれつきではなく、場の空気を悪くしたくないという気づかいが働いているから。堂々として見える裏で、本当は人の評価をずっと気にしています。その落差を知っている人の前でだけ、あなたは本当の顔を見せられます。" },
+  "乙女座": { kami: "穂波の髪神", img: "images/kami-virgo.svg",
     words: "実りの穂波が、あなたの髪に豊かに揺れています。",
-    nature: "穂波の神に見守られる人は、細部に気づく目と、人知れず段取りを整える手を持っています。あなたの丁寧さに、周りは何度も救われています。完璧を求めて自分に厳しくなりすぎる日は、「八分咲きで満開」と唱えてください。" },
-  "天秤座": { kami: "薫風の神", img: "images/kami-libra.svg",
+    nature: "穂波の髪神に見守られる人は、細部に気づく目と、人知れず段取りを整える手を持っています。あなたの丁寧さに、周りは何度も救われています。完璧を求めて自分に厳しくなりすぎる日は、「八分咲きで満開」と唱えてください。" },
+  "天秤座": { kami: "薫風の髪神", img: "images/kami-libra.svg",
     words: "初夏の薫る風が、あなたの髪を優雅になびかせています。",
-    nature: "薫風の神に見守られる人は、美しいもの・釣り合いの取れたものを見抜く審美眼を持っています。人と人の間に立つと自然と場が和らぐのは、天性の調停者だから。迷いやすいのは優柔不断ではなく、すべての側から物事を見られる証です。" },
-  "蠍座": { kami: "淵水の神", img: "images/kami-scorpio.svg",
+    nature: "薫風の髪神に見守られる人は、美しいもの・釣り合いの取れたものを見抜く審美眼を持っています。人と人の間に立つと自然と場が和らぐのは、天性の調停者だから。迷いやすいのは優柔不断ではなく、すべての側から物事を見られる証です。" },
+  "蠍座": { kami: "淵水の髪神", img: "images/kami-scorpio.svg",
     words: "深い淵の静かな水が、あなたの髪に艶を与えています。",
-    nature: "淵水の神に見守られる人は、この文章も少し疑いながら読んでいるはずです。その警戒心は、本物とまがい物を見分けてきた証。人当たりは穏やかでも、心の底では静かに相手を測っていて、たいてい最初の数分で答えが出ています。一度信じると決めた人には後戻りなく深く関わる——その激しさを表に出さずにいられることが、あなたのいちばんの強さです。" },
-  "射手座": { kami: "流星の神", img: "images/kami-sagittarius.svg",
+    nature: "淵水の髪神に見守られる人は、この文章も少し疑いながら読んでいるはずです。その警戒心は、本物とまがい物を見分けてきた証。人当たりは穏やかでも、心の底では静かに相手を測っていて、たいてい最初の数分で答えが出ています。一度信じると決めた人には後戻りなく深く関わる——その激しさを表に出さずにいられることが、あなたのいちばんの強さです。" },
+  "射手座": { kami: "流星の髪神", img: "images/kami-sagittarius.svg",
     words: "夜空を駆ける流れ星の尾が、あなたの髪になびいています。",
-    nature: "流星の神に見守られる人は、遠くを目指すほど力が湧く、冒険と学びの魂です。今いる場所が窮屈に感じるなら、それは次の旅の合図。楽観の力は天性の御守りで、あなたが「なんとかなる」と言うと、本当になんとかなっていきます。" },
-  "山羊座": { kami: "岩峰の神", img: "images/kami-capricorn.svg",
+    nature: "流星の髪神に見守られる人は、遠くを目指すほど力が湧く、冒険と学びの魂です。今いる場所が窮屈に感じるなら、それは次の旅の合図。楽観の力は天性の御守りで、あなたが「なんとかなる」と言うと、本当になんとかなっていきます。" },
+  "山羊座": { kami: "岩峰の髪神", img: "images/kami-capricorn.svg",
     words: "山嶺の澄んだ気が、あなたの髪に一本の芯を通しています。",
-    nature: "岩峰の神に見守られる人は、動く前に必ず勝算を数えている人です。人前で必死な姿を見せるのが苦手で、努力は誰も見ていないところで済ませてきました。何もしない時間に落ち着かなくなるのは、小さい頃から「しっかりしてるね」と言われ続けてきたからでしょう。その積み重ねが、他の人が三年で飽きることを十年続けられる力になっています。" },
-  "水瓶座": { kami: "星風の神", img: "images/kami-aquarius.svg",
+    nature: "岩峰の髪神に見守られる人は、動く前に必ず勝算を数えている人です。人前で必死な姿を見せるのが苦手で、努力は誰も見ていないところで済ませてきました。何もしない時間に落ち着かなくなるのは、小さい頃から「しっかりしてるね」と言われ続けてきたからでしょう。その積み重ねが、他の人が三年で飽きることを十年続けられる力になっています。" },
+  "水瓶座": { kami: "星風の髪神", img: "images/kami-aquarius.svg",
     words: "星々のあいだを渡る風が、あなたの髪に宿っています。",
-    nature: "星風の神に見守られる人は、時代の半歩先を感じ取る独創の魂です。「みんなと同じ」を心地よく裏切っていくその感性は、周りを自由にする風。孤独に見える道も、振り返れば必ず誰かがついてきています。" },
-  "魚座": { kami: "清流の神", img: "images/kami-pisces.svg",
+    nature: "星風の髪神に見守られる人は、時代の半歩先を感じ取る独創の魂です。「みんなと同じ」を心地よく裏切っていくその感性は、周りを自由にする風。孤独に見える道も、振り返れば必ず誰かがついてきています。" },
+  "魚座": { kami: "清流の髪神", img: "images/kami-pisces.svg",
     words: "清らかな流れが、あなたの髪にうるおいと透明感を与えています。",
-    nature: "清流の神に見守られる人は、境界線なく人の痛みを感じられる、癒しの魂を持っています。感じすぎて疲れる日があるのは、心のアンテナが精巧だから。あなたの優しさは水のように、乾いた場所へ自然に流れて満たしていきます。" },
+    nature: "清流の髪神に見守られる人は、境界線なく人の痛みを感じられる、癒しの魂を持っています。感じすぎて疲れる日があるのは、心のアンテナが精巧だから。あなたの優しさは水のように、乾いた場所へ自然に流れて満たしていきます。" },
 };
 
 // ══════ 12柱ごとの魂の使命（前世・カルマ・今世のテーマ） ══════
@@ -650,6 +756,24 @@ const HAIR_LINES = {
   thickness: { "細い": "細い髪は、繊細な感受性のしるし。", "普通": "程よい太さの髪は、バランス感覚のしるし。", "太い": "太い髪は、あふれる生命力のしるし。" },
   curl: { "直毛": "まっすぐな髪には、一本気な意志が宿ります。", "波状": "ゆるやかなうねりは、しなやかな心の表れです。", "強いくせ毛": "強いクセは、抑えきれない個性と創造力の泉です。" },
   cowlick: { "右巻き": "右巻きのつむじは、流れに乗るのが上手な人のしるしと言われます。", "左巻き": "左巻きのつむじは、自分だけの風を起こす人のしるしと言われます。", "2つ以上": "ふたつのつむじは、ふたつの才能を持つしるしと言われます。" },
+};
+
+// 襟足の生え際 ＝ 人生の土台・安心感・幼少期に育まれた価値観
+const NAPE_LINES = {
+  "上に上がっている": "襟足が上に上がっているあなたは、幼い頃から自分で考えて動いてきた開拓者。誰かに答えを求めるより、自分で道を切り開きながら育ってきました。変化を恐れない強さがある一方、ひとりで抱え込みやすいところも。人に頼ることを覚えると、もっと遠くまで行けます。",
+  "まっすぐ": "襟足がまっすぐなあなたは、安心できる環境を土台に、コツコツ積み上げる力の持ち主。約束やルールを守ることが自然と身についていて、周りからの信頼がそのまま財産になっています。派手さよりも、積み重ねで大きな実りを生むタイプです。",
+  "丸い": "襟足が丸いあなたは、人の気持ちを感じ取る力が強く、まわりとの調和を大切にしてきた人。困っている人を放っておけず、支える役・癒す役を自然と引き受けてきたはずです。安心できる関係の中でこそ、本来の力が出ます。",
+  "ギザギザ・不規則": "襟足がギザギザ・不規則なあなたは、幼い頃からいろいろな価値観や環境に触れながら、自分なりの考え方を築いてきた人。型にはまらない発想が持ち味で、変化の多い場所ほど才能が光ります。",
+  "下まで深い": "襟足が下まで深く生えているあなたは、簡単にはあきらめない粘りの持ち主。時間のかかることでも最後までやり抜けるので、周りから「頼れる人」と思われてきたはずです。人生経験を重ねるほど、その強さが大きな魅力になります。",
+};
+
+// 前髪の生え際 ＝ 思考のクセ・第一印象・未来への向き合い方
+const BANGS_LINES = {
+  "真ん中で分かれる": "前髪が真ん中で分かれるあなたは、幼い頃から場の空気を読み、人との関係を大切にしてきた人。ひとつの考えに偏らず多くの視点から見られるので、人と人をつなぐ役回りになりがちです。相談役として信頼される質を持っています。",
+  "右で分かれる": "前髪が右で分かれるあなたは、「ちゃんとしよう」「期待に応えよう」という気持ちを早くから育ててきた人。物事を順序立てて考えるのが得意で、計画を立てて着実に進めます。責任感の強さが、そのまま信用になっています。",
+  "左で分かれる": "前髪が左で分かれるあなたは、人の気持ちを敏感に受け取り、自分の感覚を大切にしながら育ってきた人。相手に寄り添う力があり、癒し役や支える立場で力を発揮します。感性を活かす場所と相性のいいタイプです。",
+  "パックリ割れる": "前髪がパックリ割れるあなたは、違う価値観の中で過ごした経験が、そのまま思考の柔らかさになっている人。迷いや葛藤も、ひとつずつ糧にしてきました。経験を重ねるほど人への理解が深まり、包容力が増していきます。",
+  "立ち上がる": "前髪が立ち上がるあなたは、新しいことへの興味が強く、「まずやってみよう」と動ける人。失敗より経験を選んで育ってきたぶん、自分らしい道を切り開く力があります。自由な発想が、新しい価値を生んでいきます。",
 };
 
 // つむじの位置の読み解き
@@ -911,12 +1035,14 @@ async function ensureDeepReading(record) {
 }
 
 /* ══════ シェア ══════ */
-function shareRowHtml(text) {
+function shareRowHtml(text, cardId) {
   const enc = encodeURIComponent(text);
   const encUrl = encodeURIComponent(APP_URL);
   return `<div class="share-row">
     <p class="share-title">この結果を友だちに教える</p>
+    ${cardId ? `<button class="share-btn card" onclick="saveKamiCard(${cardId})">画像を保存（Instagram用）</button>` : ""}
     <a class="share-btn line" href="https://line.me/R/share?text=${enc}%0A${encUrl}" target="_blank" rel="noopener">LINEで送る</a>
+    <a class="share-btn fb" href="https://www.facebook.com/sharer/sharer.php?u=${encUrl}" target="_blank" rel="noopener">Facebookでシェア</a>
     <a class="share-btn x" href="https://twitter.com/intent/tweet?text=${enc}&url=${encUrl}" target="_blank" rel="noopener">Xでポスト</a>
     <button class="share-btn" onclick="copyShare(this.dataset.t)" data-t="${text.replace(/"/g, "&quot;")}">リンクをコピー</button>
   </div>`;
@@ -925,6 +1051,160 @@ function copyShare(text) {
   const s = text + "\n" + APP_URL;
   if (navigator.share) { navigator.share({ text: s }).catch(function(){}); return; }
   navigator.clipboard.writeText(s).then(function(){ alert("コピーしました。SNSやLINEに貼り付けて共有できます"); });
+}
+
+/* ══════ 髪神カード画像（Instagram用・お守り札） ══════ */
+const CARD_W = 1080, CARD_H = 1350;
+
+function loadImg(src) {
+  return new Promise((resolve, reject) => {
+    const im = new Image();
+    im.onload = () => resolve(im);
+    im.onerror = reject;
+    im.src = src;
+  });
+}
+
+// 神様の絵を読む。jpgを優先し、無ければsvgに戻す
+async function loadKamiArt(kamiImg) {
+  try { return await loadImg(kamiImg.replace(".svg", ".jpg")); }
+  catch { return await loadImg(kamiImg); }
+}
+
+// 行頭に置いてはいけない文字（句読点・閉じ括弧など）
+const KINSOKU_HEAD = "、。，．）」』】〕〉》”’ー…‥・！？";
+
+// 日本語は単語で切れないので一文字ずつ測って折り返す。
+// 禁則はぶら下げ、折るなら読点のうしろを優先（語の途中で切れるのを防ぐ）
+const BREAK_AFTER = "、。";
+function wrapJa(ctx, text, maxW) {
+  const lines = [];
+  let line = "", lastBreak = -1;
+  for (const ch of text) {
+    if (ch === "\n") { lines.push(line); line = ""; lastBreak = -1; continue; }
+    if (ctx.measureText(line + ch).width > maxW && line) {
+      if (KINSOKU_HEAD.includes(ch)) { lines.push(line + ch); line = ""; lastBreak = -1; continue; }
+      if (lastBreak > 0) {
+        lines.push(line.slice(0, lastBreak));
+        line = line.slice(lastBreak) + ch;
+      } else { lines.push(line); line = ch; }
+      lastBreak = -1;
+    } else line += ch;
+    if (BREAK_AFTER.includes(ch)) lastBreak = line.length;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+function drawCenteredLines(ctx, lines, y, lineH) {
+  lines.forEach((ln, i) => ctx.fillText(ln, CARD_W / 2, y + i * lineH));
+  return y + lines.length * lineH;
+}
+
+async function buildKamiCard(record) {
+  const r = record.result, a = record.answers;
+  if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+  const cv = document.createElement("canvas");
+  cv.width = CARD_W; cv.height = CARD_H;
+  const ctx = cv.getContext("2d");
+
+  // 背景：神様の絵をカード全面に敷く（縦長に合わせて中央を切り出す）
+  const art = await loadKamiArt(r.kamiImg);
+  const scale = Math.max(CARD_W / art.width, CARD_H / art.height);
+  const dw = art.width * scale, dh = art.height * scale;
+  ctx.drawImage(art, (CARD_W - dw) / 2, (CARD_H - dh) / 2, dw, dh);
+
+  // 文字を読みやすくするための帳（上下を濃く）
+  const veil = ctx.createLinearGradient(0, 0, 0, CARD_H);
+  veil.addColorStop(0, "rgba(10,20,24,0.78)");
+  veil.addColorStop(0.42, "rgba(10,20,24,0.42)");
+  veil.addColorStop(1, "rgba(10,20,24,0.88)");
+  ctx.fillStyle = veil;
+  ctx.fillRect(0, 0, CARD_W, CARD_H);
+
+  // 金の縁取り（お守り札の枠）
+  ctx.strokeStyle = "rgba(176,141,87,0.85)";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(46, 46, CARD_W - 92, CARD_H - 92);
+
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#e8d9bd";
+
+  // 上部：ブランド
+  ctx.font = "600 34px 'Shippori Mincho', serif";
+  ctx.letterSpacing = "16px";
+  ctx.fillText("神と髪", CARD_W / 2, 148);
+  ctx.font = "300 24px 'Noto Serif JP', serif";
+  ctx.letterSpacing = "10px";
+  ctx.fillText("髪 占 い", CARD_W / 2, 196);
+  ctx.letterSpacing = "0px";
+
+  // 中央：髪神の名
+  ctx.fillStyle = "rgba(232,217,189,0.85)";
+  ctx.font = "300 28px 'Noto Serif JP', serif";
+  ctx.letterSpacing = "8px";
+  ctx.fillText("あなたの髪神", CARD_W / 2, 690);
+  ctx.letterSpacing = "0px";
+
+  ctx.fillStyle = "#fffdf9";
+  ctx.font = "600 104px 'Shippori Mincho', serif";
+  ctx.shadowColor = "rgba(0,0,0,0.5)";
+  ctx.shadowBlur = 18;
+  ctx.fillText(r.kamiName, CARD_W / 2, 800);
+  ctx.shadowBlur = 0;
+
+  // 金の区切り線
+  ctx.strokeStyle = "rgba(176,141,87,0.9)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(CARD_W / 2 - 90, 852);
+  ctx.lineTo(CARD_W / 2 + 90, 852);
+  ctx.stroke();
+
+  // 神様からの一言
+  ctx.fillStyle = "rgba(255,253,249,0.94)";
+  ctx.font = "300 34px 'Noto Serif JP', serif";
+  let y = drawCenteredLines(ctx, wrapJa(ctx, r.kamiWords, CARD_W - 200), 916, 54);
+
+  // 星まわり
+  ctx.fillStyle = "rgba(232,217,189,0.9)";
+  ctx.font = "300 28px 'Noto Serif JP', serif";
+  const badges = [r.zodiac, `${r.element}の質`, `数秘${r.numerology}`, `${r.eto}年`].filter(Boolean);
+  ctx.fillText(badges.join("　·　"), CARD_W / 2, y + 52);
+
+  // 下部：名前と入口
+  ctx.fillStyle = "rgba(255,253,249,0.9)";
+  ctx.font = "300 30px 'Noto Serif JP', serif";
+  if (a.name) ctx.fillText(`${a.name} さまの髪神`, CARD_W / 2, CARD_H - 214);
+
+  ctx.fillStyle = "rgba(232,217,189,0.95)";
+  ctx.font = "600 30px 'Shippori Mincho', serif";
+  ctx.fillText("「神と髪　髪占い」で検索", CARD_W / 2, CARD_H - 148);
+  ctx.fillStyle = "rgba(232,217,189,0.6)";
+  ctx.font = "300 21px 'Noto Serif JP', serif";
+  ctx.fillText("masayoshitsuzuku.github.io/kamiuranai", CARD_W / 2, CARD_H - 106);
+
+  return cv;
+}
+
+async function saveKamiCard(id) {
+  const rec = loadRecords().find(r => r.id === id);
+  if (!rec) { alert("記録が見つかりませんでした"); return; }
+  try {
+    const cv = await buildKamiCard(rec);
+    const blob = await new Promise(res => cv.toBlob(res, "image/png"));
+    const file = new File([blob], `kamiuranai_${rec.result.kamiName}.png`, { type: "image/png" });
+    // スマホでは共有シートからInstagramに直接送れる
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file] });
+      return;
+    }
+    downloadBlob(blob, "image/png", `kamiuranai_${rec.result.kamiName}.png`);
+  } catch (e) {
+    console.warn(e);
+    alert("画像を作れませんでした。時間をおいてもう一度お試しください");
+  }
 }
 
 /* ══════ 相性占い ══════ */
@@ -1125,6 +1405,15 @@ const SCALP_ADVICE = {
   "混合": "部位で状態が違うタイプ。トップは軽く、乾きやすい部分は保湿を意識して。",
 };
 
+// 頭皮の色から読む、いまの巡り（色だけで健康状態は判断できないため、あくまで目安）
+const SCALP_COLOR_ADVICE = {
+  "青白い": "青白く透明感のある頭皮は、血流と皮脂のバランスが整っているしるし。健康な髪が育ちやすい状態です。いまのケアを続けてください。",
+  "白": "白い頭皮は落ち着いた状態。ここに青みと透明感が出てくると、さらに良い巡りのサインです。頭皮マッサージで血行を促してみてください。",
+  "黄": "黄色みは、皮脂の酸化や毛穴の汚れ、洗浄不足のサインとされます。正しい洗い方に加えて、野菜や果物などの抗酸化を意識した食事と、十分な睡眠が助けになります。",
+  "赤み": "赤みは、炎症・紫外線・シャンプーや整髪料の刺激・掻きすぎ・ストレスなどのサイン。頭皮への刺激を減らし、紫外線対策を。赤みやかゆみが続くときは、自己判断せず皮膚科へご相談ください。",
+  "茶色": "茶色っぽさやくすみは、紫外線ダメージ・色素沈着・慢性的な血行不良のサインとされます。帽子や日傘で紫外線を防ぎ、頭皮マッサージと保湿を取り入れてみてください。",
+};
+
 const FACE_STYLE = {
   "丸": "トップに高さを出し、縦のラインを意識したスタイルがすっきり映えます。",
   "卵": "どんなスタイルも似合う理想のバランス。なりたいイメージを素直に追いかけて。",
@@ -1193,11 +1482,16 @@ function buildResult(a) {
     ...(Array.isArray(a.cowlickPos) ? a.cowlickPos.map(p => COWLICK_POS_LINES[p]) : []),
   ].filter(Boolean);
 
+  // 生え際の読み解き（襟足＝土台、前髪＝これから）
+  const napeLine = NAPE_LINES[a.napeShape] || "";
+  const bangsLine = BANGS_LINES[a.bangsHabit] || "";
+
   const eto = getEto(a.birthdate);
   const shichen = getShichen(a.birthTimeExact);
 
   let careLines = [];
   if (a.scalpType && SCALP_ADVICE[a.scalpType]) careLines.push(SCALP_ADVICE[a.scalpType]);
+  if (a.scalpColor && SCALP_COLOR_ADVICE[a.scalpColor]) careLines.push(SCALP_COLOR_ADVICE[a.scalpColor]);
   if (a.damage && DAMAGE_ADVICE[a.damage]) careLines.push(DAMAGE_ADVICE[a.damage]);
   if (a.stress === "高い") careLines.push("ストレスは頭皮から硬くします。シャンプー時に1分だけ、頭皮をゆっくりほぐす時間を。");
   if (a.rhythm === "夜型" || a.rhythm === "不規則") careLines.push("髪は眠っている間に育ちます。まずは眠りの質をひとつだけ整えることから。");
@@ -1229,6 +1523,8 @@ function buildResult(a) {
     shichenName: shichen ? shichen.name : "",
     shichenMsg: shichen ? `${shichen.name}（${a.birthTimeExact}）の生まれ——${shichen.msg}` : "",
     hairLines,
+    napeLine,
+    bangsLine,
     styleAdvice: a.faceShape ? FACE_STYLE[a.faceShape] : "",
     careLines,
     concerns,
@@ -1291,11 +1587,17 @@ function startDiagnosis() {
 function renderStep() {
   const step = STEPS[currentStep];
   document.getElementById("progressBar").style.width = ((currentStep) / STEPS.length * 100) + "%";
-  document.getElementById("stepLabel").textContent = `${currentStep + 1} / ${STEPS.length} — ${step.label}`;
   document.getElementById("prevBtn").style.visibility = currentStep === 0 ? "hidden" : "visible";
-  document.getElementById("nextBtn").textContent = currentStep === STEPS.length - 1 ? "結果を見る" : "つぎへ";
+  document.getElementById("nextBtn").textContent =
+    step.interlude ? "つづく" : (currentStep === STEPS.length - 1 ? "結果を見る" : "つぎへ");
 
-  let html = `<h2 class="q-title">${step.title}</h2>`;
+  // 幕間のページは、番号も見出しも出さずに文章だけを見せる
+  const quiz = document.getElementById("quiz");
+  quiz.classList.toggle("interlude", !!step.interlude);
+  document.getElementById("stepLabel").textContent =
+    step.interlude ? "" : `${currentStep + 1} / ${STEPS.length} — ${step.label}`;
+
+  let html = step.title ? `<h2 class="q-title">${step.title}</h2>` : "";
   if (step.intro) html += `<div class="quiz-intro">${step.intro}</div>`;
   for (const f of step.fields) {
     html += `<div class="field"><label class="name">${f.label}</label>`;
@@ -1412,6 +1714,13 @@ function renderResult(record) {
       ${r.hairLines.map(l => `<p>${l}</p>`).join("")}
       <p>${r.elementAdvice}</p>
     </div>
+    ${(r.napeLine || r.bangsLine) ? `
+    <div class="result-card">
+      <h3>生え際が語る — あなたの土台と、これから</h3>
+      ${r.napeLine ? `<p class="hae-label">襟足 — 人生の土台・幼少期に育まれたもの</p><p>${r.napeLine}</p>` : ""}
+      ${r.bangsLine ? `<p class="hae-label">前髪 — 思考のクセ・未来への向き合い方</p><p>${r.bangsLine}</p>` : ""}
+      <p style="font-size:0.78rem; color:#8a8577;">襟足は自分では見えにくい場所ですが、木の根と同じで、見えないところがその人を支えています。前髪は反対に、これからどこへ向かうかを映す場所です。</p>
+    </div>` : ""}
     <div class="result-card">
       <h3>いまあなたがいる、人生の周期</h3>
       <p>${r.age}歳のあなたは、いま「${r.cycle.phase}」にいます。${r.cycle.advice}</p>
@@ -1472,7 +1781,7 @@ function renderResult(record) {
     </div>`;
   }
   html += renderOutcomeSection(record);
-  html += shareRowHtml(`「神と髪」で占ったら、私の髪の神様は『${r.kamiName}』でした⛩️`);
+  html += shareRowHtml(`「神と髪」で占ったら、私の髪神は『${r.kamiName}』でした⛩️`, record.id);
   html += `<p style="text-align:center; font-size:0.8rem; color:#8a8577; margin-top:1rem;">${a.name} さま ／ ${dateStr}</p>`;
   html += `<p style="text-align:center; font-size:0.72rem; color:#a8a396; margin-top:0.3rem;">※この占いは、楽しんでいただくためのものです</p>`;
   document.getElementById("resultBody").innerHTML = html;
@@ -1644,7 +1953,9 @@ const CSV_HEADERS = ["ID","診断日時","名前","生年月日","血液型","�
   "理想イメージ","カラー傾向","施術者メモ",
   "星座","元素","数秘","干支","十二時辰","髪の神様",
   "当てはまり度","人生の転機","頑張った時期","恋愛・家庭","学び・大切なこと","人生記録日時","性別",
-  "命式JSON","九星JSON","幼少期の親の関わり"];
+  "命式JSON","九星JSON","幼少期の親の関わり",
+  // ※新しい列は必ず末尾に足す（途中に挿すと既存行がズレるため）
+  "前髪の生え癖","襟足の形"];
 
 function flattenRecord(r) {
   const a = r.answers || {}, res = r.result || {}, o = r.lifeStory || {}, t = r.timeql || {};
@@ -1659,7 +1970,8 @@ function flattenRecord(r) {
     a.idealImage, a.colorPref, a.memo,
     res.zodiac, res.element, res.numerology, res.eto, res.shichenName, res.kamiName,
     o.fit, o.turningPoint, o.effort, o.loveFamily, o.lesson, o.recordedAt, a.gender,
-    t.bazi ? JSON.stringify(t.bazi) : "", t.kyusei ? JSON.stringify(t.kyusei) : "", o.childhood];
+    t.bazi ? JSON.stringify(t.bazi) : "", t.kyusei ? JSON.stringify(t.kyusei) : "", o.childhood,
+    a.bangsHabit, a.napeShape];
 }
 
 function exportCsv() {
