@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>神と髪 — 髪占い</title>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="../images/kamiuranai-app-icon-192.png">
+<link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Shippori+Mincho:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -46,6 +49,14 @@ h1, h2, h3 { font-family: 'Shippori Mincho', serif; }
 .hero-stage img { width: 100%; height: auto; display: block; }
 .hero-stage .hero-mobile { display: none; }
 .start-body { max-width: 640px; margin: 0 auto; padding: 0 5vw 3rem; }
+.brand-icon {
+  display: block;
+  width: min(28vw, 128px);
+  height: min(28vw, 128px);
+  margin: 1.2rem auto 0.9rem;
+  border-radius: 24%;
+  box-shadow: 0 10px 24px rgba(43,41,38,0.18);
+}
 
 /* 画像の中に重ねる本物のボタン */
 .overlay-btn, .overlay-link {
@@ -66,6 +77,7 @@ h1, h2, h3 { font-family: 'Shippori Mincho', serif; }
   .hero-stage .hero-mobile { display: block; height: 44vh; object-fit: cover; object-position: center 20%; }
   .overlay-btn, .overlay-link { display: none; }
   .mobile-actions { display: block; margin-top: 1.6rem; }
+  .brand-icon { width: 96px; height: 96px; margin-top: 1.4rem; }
 }
 
 /* ---------- 質問画面 ---------- */
@@ -149,6 +161,7 @@ textarea { min-height: 4.5rem; resize: vertical; }
     <button class="overlay-btn ob-ghost" style="left:37.2%; top:80.9%; width:25.6%; height:6.1%;" onclick="showStats()">傾向を見る（分析）</button>
   </div>
   <div class="start-body">
+    <img src="../images/kamiuranai-app-icon-192.png" alt="髪占い" class="brand-icon">
     <div class="mobile-actions">
       <button class="btn" onclick="startDiagnosis()">占いをはじめる</button>
       <button class="btn ghost" onclick="showRecords()">これまでの記録を見る</button>
