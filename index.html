@@ -1791,7 +1791,7 @@ function renderResult(record) {
 function renderOutcomeSection(record) {
   const o = record.lifeStory;
   const bonus = record.result && record.result.eto ? (BONUS_TIPS[record.result.eto] || "") : "";
-  const hasDetails = o && (o.childhood || o.turningPoint || o.effort || o.loveFamily || o.lesson || o.detailsDone);
+  const hasDetails = o && (o.childhood || o.turningType || o.turningPoint || o.effort || o.loveFamily || o.lesson || o.detailsDone);
 
   // 段階3: アンケート記入済み → お礼に秘密の開運メッセージ
   if (o && o.fit && hasDetails) {
@@ -1799,6 +1799,7 @@ function renderOutcomeSection(record) {
       <h3>あなたの人生の記録</h3>
       <p>鑑定の当てはまり：${o.fit}</p>
       ${o.childhood ? `<p>幼少期の親の関わり：${o.childhood}</p>` : ""}
+      ${o.turningType ? `<p>転機の種類：${o.turningType}</p>` : ""}
       ${o.turningPoint ? `<p>人生の転機：${o.turningPoint}</p>` : ""}
       ${o.effort ? `<p>頑張った時期：${o.effort}</p>` : ""}
       ${o.loveFamily ? `<p>恋愛・家庭：${o.loveFamily}</p>` : ""}
@@ -1816,7 +1817,12 @@ function renderOutcomeSection(record) {
       <p style="font-size:0.8rem; color:#6b665d; margin-top:1.2rem;">髪は、親から、そのまた親から受け継がれてきたもの。幼い頃に親御さんとどう過ごしたかは、髪占いを読み解く大切な手がかりになります。</p>
       <div class="field"><label class="name">幼少期、親御さん（育ててくれた方）との関わりはどんなふうでしたか？</label>
         <textarea id="o_childhood" placeholder="例：厳しく育てられた、たっぷり甘えさせてもらった、祖父母と過ごすことが多かった など"></textarea></div>
-      <div class="field"><label class="name">これまでの人生で、一番の転機はどんなことでしたか？</label>
+      <div class="field"><label class="name">一番の転機は、どれに近いですか？（ワンタップ）</label>
+        <div class="choices" id="o_turningType">
+          ${["出産・子育て","結婚","離婚","仕事の変化","病気・心身","引っ越し・移動","学び・出会い","死別","その他"].map(v =>
+            `<label><input type="radio" name="o_turningType" value="${v}"><span>${v}</span></label>`).join("")}
+        </div></div>
+      <div class="field"><label class="name">よければ、その転機のことを少しだけ</label>
         <textarea id="o_turning" placeholder="例：30歳での転職、結婚、引っ越しなど"></textarea></div>
       <div class="field"><label class="name">一番頑張った時期・乗り越えたことは？</label>
         <textarea id="o_effort" placeholder="例：子育てと仕事の両立の時期"></textarea></div>
@@ -1858,14 +1864,16 @@ function saveLifeStoryDetails(id) {
   const list = loadRecords();
   const rec = list.find(r => r.id === id);
   if (!rec) return;
+  const typeSel = document.querySelector('input[name="o_turningType"]:checked');
   const details = {
     childhood: document.getElementById("o_childhood").value.trim(),
+    turningType: typeSel ? typeSel.value : "",
     turningPoint: document.getElementById("o_turning").value.trim(),
     effort: document.getElementById("o_effort").value.trim(),
     loveFamily: document.getElementById("o_love").value.trim(),
     lesson: document.getElementById("o_lesson").value.trim(),
   };
-  if (!details.childhood && !details.turningPoint && !details.effort && !details.loveFamily && !details.lesson) {
+  if (!details.childhood && !details.turningType && !details.turningPoint && !details.effort && !details.loveFamily && !details.lesson) {
     alert("どれかひとつだけでもご記入いただけると、秘密の開運メッセージをお渡しできます");
     return;
   }
@@ -1955,7 +1963,7 @@ const CSV_HEADERS = ["ID","診断日時","名前","生年月日","血液型","�
   "当てはまり度","人生の転機","頑張った時期","恋愛・家庭","学び・大切なこと","人生記録日時","性別",
   "命式JSON","九星JSON","幼少期の親の関わり",
   // ※新しい列は必ず末尾に足す（途中に挿すと既存行がズレるため）
-  "前髪の生え癖","襟足の形"];
+  "前髪の生え癖","襟足の形","転機の種類"];
 
 function flattenRecord(r) {
   const a = r.answers || {}, res = r.result || {}, o = r.lifeStory || {}, t = r.timeql || {};
@@ -1971,7 +1979,7 @@ function flattenRecord(r) {
     res.zodiac, res.element, res.numerology, res.eto, res.shichenName, res.kamiName,
     o.fit, o.turningPoint, o.effort, o.loveFamily, o.lesson, o.recordedAt, a.gender,
     t.bazi ? JSON.stringify(t.bazi) : "", t.kyusei ? JSON.stringify(t.kyusei) : "", o.childhood,
-    a.bangsHabit, a.napeShape];
+    a.bangsHabit, a.napeShape, o.turningType];
 }
 
 function exportCsv() {
