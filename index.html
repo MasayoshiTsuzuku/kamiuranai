@@ -220,6 +220,7 @@ textarea { min-height: 4.5rem; resize: vertical; }
 }
 .kami-name .small-label { font-size: 0.75rem; letter-spacing: 0.3em; color: #e8d9bd; margin-bottom: 1rem; }
 .kami-name h2 { font-size: 1.7rem; letter-spacing: 0.12em; margin-bottom: 0.8rem; }
+.kami-name h2 rt { font-size: 0.62rem; letter-spacing: 0.18em; color: #e8d9bd; opacity: 0.95; font-weight: 400; padding-bottom: 0.2em; }
 .kami-name .kami-words { font-size: 0.9rem; opacity: 0.9; }
 .badge-row { display: flex; justify-content: center; gap: 0.6rem; margin-top: 1.2rem; flex-wrap: wrap; }
 .badge { font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.4); border-radius: 999px; padding: 0.25rem 0.9rem; }
@@ -673,6 +674,25 @@ const ZODIAC_KAMI = {
     words: "清らかな流れが、あなたの髪にうるおいと透明感を与えています。",
     nature: "清流の髪神に見守られる人は、境界線なく人の痛みを感じられる、癒しの魂を持っています。感じすぎて疲れる日があるのは、心のアンテナが精巧だから。あなたの優しさは水のように、乾いた場所へ自然に流れて満たしていきます。" },
 };
+
+// ══════ 髪神の名前の読み（漢字が難しいので、ふりがなを添える） ══════
+const KAMI_YOMI = {
+  "暁火": "あかつきび", "大樹": "たいじゅ", "双風": "そうふう", "月潮": "つきしお",
+  "日輪": "にちりん", "穂波": "ほなみ", "薫風": "くんぷう", "淵水": "ふちみず",
+  "流星": "りゅうせい", "岩峰": "がんぽう", "星風": "ほしかぜ", "清流": "せいりゅう",
+};
+
+// 「淵水の髪神」→ ルビ付きHTML。古い記録の「〜の神」表記でも壊れない
+function kamiRubyHtml(kamiName) {
+  const name = String(kamiName || "");
+  const base = name.slice(0, 2);
+  const yomi = KAMI_YOMI[base];
+  if (!yomi) return name;
+  const tail = name.slice(2) === "の髪神"
+    ? `の<ruby>髪神<rt>かみがみ</rt></ruby>`
+    : name.slice(2);
+  return `<ruby>${base}<rt>${yomi}</rt></ruby>${tail}`;
+}
 
 // ══════ 12柱ごとの魂の使命（前世・カルマ・今世のテーマ） ══════
 const SOUL_MISSION = {
@@ -1144,8 +1164,18 @@ async function buildKamiCard(record) {
   ctx.fillStyle = "rgba(232,217,189,0.85)";
   ctx.font = "300 28px 'Noto Serif JP', serif";
   ctx.letterSpacing = "8px";
-  ctx.fillText("あなたの髪神", CARD_W / 2, 690);
+  ctx.fillText("あなたの髪神", CARD_W / 2, 656);
   ctx.letterSpacing = "0px";
+
+  // 漢字が難しいので、名前の上に小さくふりがなを添える
+  const yomi = KAMI_YOMI[String(r.kamiName).slice(0, 2)];
+  if (yomi) {
+    ctx.fillStyle = "rgba(255,253,249,0.82)";
+    ctx.font = "300 30px 'Noto Serif JP', serif";
+    ctx.letterSpacing = "6px";
+    ctx.fillText(yomi + "　の　かみがみ", CARD_W / 2, 726);
+    ctx.letterSpacing = "0px";
+  }
 
   ctx.fillStyle = "#fffdf9";
   ctx.font = "600 104px 'Shippori Mincho', serif";
@@ -1686,7 +1716,7 @@ function renderResult(record) {
   let html = `
     <div class="kami-name" style="background-image: linear-gradient(rgba(15,30,28,0.25), rgba(15,30,28,0.6)), url('${r.kamiImg.replace(".svg", ".jpg")}'), url('${r.kamiImg}'); background-size: cover; background-position: center;">
       <p class="small-label">あなたの髪の神様</p>
-      <h2>${r.kamiName}</h2>
+      <h2>${kamiRubyHtml(r.kamiName)}</h2>
       <p class="kami-words">${r.kamiWords}</p>
       <div class="badge-row">
         <span class="badge">${r.zodiac}</span>
