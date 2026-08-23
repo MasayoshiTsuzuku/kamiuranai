@@ -254,6 +254,10 @@ textarea { min-height: 4.5rem; resize: vertical; }
 
 /* ---------- 深い鑑定（四柱推命・九星） ---------- */
 .deep-card { border-top-color: var(--sea); }
+.mayan-sig { display: flex; justify-content: center; gap: 0.6rem; flex-wrap: wrap; margin: 0.4rem 0 1.2rem; }
+.mayan-sig span { font-size: 0.82rem; letter-spacing: 0.08em; border-radius: 999px; padding: 0.3rem 1rem; }
+.mayan-seal { background: var(--sea); color: #fff; }
+.mayan-tone { border: 1px solid rgba(176,141,87,0.7); color: var(--gold); }
 .pillar-grid { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
 .pillar { flex: 1; min-width: 68px; background: var(--sand); border-radius: 4px; padding: 0.7rem 0.4rem; text-align: center; }
 .p-label { display: block; font-size: 0.7rem; color: #8a8577; }
@@ -965,6 +969,23 @@ function trimBazi(d) {
   };
 }
 
+// マヤ暦はエッセンスだけ受け取る（KIN・紋章・音・城）
+function trimMayan(d) {
+  const seal = d.seal || {}, tone = d.tone || {}, tr = d.tone_reading || {};
+  return {
+    kin: d.kin || "",
+    seal: seal.name_ja || "",
+    sealColor: seal.color_ja || "",
+    sealPower: seal.power || "",
+    sealAction: seal.action || "",
+    tone: tone.name_ja || "",
+    toneNumber: tone.number || "",
+    tonePower: tone.power || "",
+    toneEssence: tr.essence || "",
+    castle: d.castle_name_ja || "",
+  };
+}
+
 function trimKyusei(d) {
   const h = d.honmeisei || {};
   return { name: h.name || "", personality: h.personality || "", advice: h.advice || "", color: h.color || "", direction: h.direction || "", keywords: h.keywords || [] };
@@ -1024,6 +1045,17 @@ function renderDeepCards(record) {
       <p>九星の守り色は<strong>${k.color}</strong>、縁の深い方位は<strong>${k.direction}</strong>。迷ったときは、この色とこの方角があなたの味方です。</p>
     </div>`;
   }
+  if (t.mayan && t.mayan.kin) {
+    const m = t.mayan;
+    html += `<div class="result-card deep-card">
+      <h3>マヤの刻印 — KIN ${m.kin}</h3>
+      <p class="mayan-sig"><span class="mayan-seal">${m.seal}</span><span class="mayan-tone">${m.tone}の音</span></p>
+      <p>マヤ暦では、生まれた日にひとつの刻印が押されると考えます。あなたの紋章は<strong>${m.seal}</strong>——${m.sealPower}の力を持ち、${m.sealAction}ことがこの人生の役割です。</p>
+      ${m.toneEssence ? `<p>重なる音は<strong>${m.tone}（${m.toneNumber}）</strong>。${m.toneEssence}</p>` : ""}
+      ${m.castle ? `<p>いまあなたが歩いているのは<strong>${m.castle}</strong>。</p>` : ""}
+      ${m.sealColor ? `<p>刻印の色は<strong>${m.sealColor}</strong>。髪に迷ったら、この色をどこかに一筋。</p>` : ""}
+    </div>`;
+  }
   return html;
 }
 
@@ -1039,8 +1071,11 @@ async function ensureDeepReading(record) {
     const results = await Promise.all([
       callTimeql("bazi", Object.assign({ gender: gender }, base)),
       callTimeql("kyusei", base),
+      // マヤ暦は生年月日だけで出せる。落ちても他の鑑定は止めない
+      callTimeql("mayan", { date: a.birthdate }).catch(() => null),
     ]);
     record.timeql = { bazi: trimBazi(results[0]), kyusei: trimKyusei(results[1]) };
+    if (results[2]) record.timeql.mayan = trimMayan(results[2]);
     const list = loadRecords();
     const idx = list.findIndex(r => r.id === record.id);
     if (idx >= 0) { list[idx].timeql = record.timeql; localStorage.setItem(STORE_KEY, JSON.stringify(list)); }
@@ -1164,16 +1199,17 @@ async function buildKamiCard(record) {
   ctx.fillStyle = "rgba(232,217,189,0.85)";
   ctx.font = "300 28px 'Noto Serif JP', serif";
   ctx.letterSpacing = "8px";
-  ctx.fillText("あなたの髪神", CARD_W / 2, 656);
+  ctx.fillText("あなたの髪神", CARD_W / 2, 640);
   ctx.letterSpacing = "0px";
 
   // 漢字が難しいので、名前の上に小さくふりがなを添える
+  // （104pxの漢字は上に約91px立ち上がるので、その分よけた位置に置く）
   const yomi = KAMI_YOMI[String(r.kamiName).slice(0, 2)];
   if (yomi) {
-    ctx.fillStyle = "rgba(255,253,249,0.82)";
-    ctx.font = "300 30px 'Noto Serif JP', serif";
+    ctx.fillStyle = "rgba(255,253,249,0.8)";
+    ctx.font = "300 26px 'Noto Serif JP', serif";
     ctx.letterSpacing = "6px";
-    ctx.fillText(yomi + "　の　かみがみ", CARD_W / 2, 726);
+    ctx.fillText(yomi + "　の　かみがみ", CARD_W / 2, 694);
     ctx.letterSpacing = "0px";
   }
 
@@ -1181,15 +1217,15 @@ async function buildKamiCard(record) {
   ctx.font = "600 104px 'Shippori Mincho', serif";
   ctx.shadowColor = "rgba(0,0,0,0.5)";
   ctx.shadowBlur = 18;
-  ctx.fillText(r.kamiName, CARD_W / 2, 800);
+  ctx.fillText(r.kamiName, CARD_W / 2, 814);
   ctx.shadowBlur = 0;
 
   // 金の区切り線
   ctx.strokeStyle = "rgba(176,141,87,0.9)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(CARD_W / 2 - 90, 852);
-  ctx.lineTo(CARD_W / 2 + 90, 852);
+  ctx.moveTo(CARD_W / 2 - 90, 862);
+  ctx.lineTo(CARD_W / 2 + 90, 862);
   ctx.stroke();
 
   // 神様からの一言
@@ -1202,6 +1238,14 @@ async function buildKamiCard(record) {
   ctx.font = "300 28px 'Noto Serif JP', serif";
   const badges = [r.zodiac, `${r.element}の質`, `数秘${r.numerology}`, `${r.eto}年`].filter(Boolean);
   ctx.fillText(badges.join("　·　"), CARD_W / 2, y + 52);
+
+  // マヤの刻印（あれば一行だけ添える。KIN番号は覚えやすくシェアされやすい）
+  const my = record.timeql && record.timeql.mayan;
+  if (my && my.kin) {
+    ctx.fillStyle = "rgba(232,217,189,0.78)";
+    ctx.font = "300 26px 'Noto Serif JP', serif";
+    ctx.fillText(`KIN ${my.kin}　${my.seal}・${my.tone}の音`, CARD_W / 2, y + 100);
+  }
 
   // 下部：名前と入口
   ctx.fillStyle = "rgba(255,253,249,0.9)";
@@ -1993,7 +2037,8 @@ const CSV_HEADERS = ["ID","診断日時","名前","生年月日","血液型","�
   "当てはまり度","人生の転機","頑張った時期","恋愛・家庭","学び・大切なこと","人生記録日時","性別",
   "命式JSON","九星JSON","幼少期の親の関わり",
   // ※新しい列は必ず末尾に足す（途中に挿すと既存行がズレるため）
-  "前髪の生え癖","襟足の形","転機の種類"];
+  "前髪の生え癖","襟足の形","転機の種類",
+  "マヤKIN","マヤ紋章","マヤ音"];
 
 function flattenRecord(r) {
   const a = r.answers || {}, res = r.result || {}, o = r.lifeStory || {}, t = r.timeql || {};
@@ -2009,7 +2054,8 @@ function flattenRecord(r) {
     res.zodiac, res.element, res.numerology, res.eto, res.shichenName, res.kamiName,
     o.fit, o.turningPoint, o.effort, o.loveFamily, o.lesson, o.recordedAt, a.gender,
     t.bazi ? JSON.stringify(t.bazi) : "", t.kyusei ? JSON.stringify(t.kyusei) : "", o.childhood,
-    a.bangsHabit, a.napeShape, o.turningType];
+    a.bangsHabit, a.napeShape, o.turningType,
+    t.mayan ? t.mayan.kin : "", t.mayan ? t.mayan.seal : "", t.mayan ? t.mayan.tone : ""];
 }
 
 function exportCsv() {
